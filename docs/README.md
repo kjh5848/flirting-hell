@@ -23,8 +23,10 @@
 - `product/mvp-spec.md`: V1 화면 흐름, 입력값, AI 출력 포맷
 - `product/ai-response-schema.md`: AI 응답 데이터 구조
 - `product/screen-flow.md`: 앱 화면 흐름과 결과 화면 구조
+- `product/wireframes.md`: 모바일 우선 웹 UI 와이어프레임
 - `product/tone-profile.md`: 사용자 말투 분석과 답장 반영 방식
 - `product/monetization-metrics.md`: 무료/유료 구분과 제품 지표
+- `product/pre-development-sequence.md`: 개발 전 기획/설계/기술 선택 순서
 - `product/development-phases.md`: MVP 이후 개발 페이즈와 단계별 완료 조건
 - `product/phase-specs.md`: 페이즈별 구현 요구사항과 검증 기준
 - `technical/tech-stack.md`: MVP 기술 스택과 아키텍처 방향
