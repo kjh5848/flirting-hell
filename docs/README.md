@@ -25,6 +25,8 @@
 - `product/screen-flow.md`: 앱 화면 흐름과 결과 화면 구조
 - `product/tone-profile.md`: 사용자 말투 분석과 답장 반영 방식
 - `product/monetization-metrics.md`: 무료/유료 구분과 제품 지표
+- `product/development-phases.md`: MVP 이후 개발 페이즈와 단계별 완료 조건
+- `product/phase-specs.md`: 페이즈별 구현 요구사항과 검증 기준
 - `technical/tech-stack.md`: MVP 기술 스택과 아키텍처 방향
 - `technical/cloudflare-stack-option.md`: Cloudflare 기반 MVP 대안
 - `technical/polar-payment-flow.md`: Polar 분석권 결제 흐름
@@ -33,6 +35,7 @@
 - `technical/mvp-architecture.md`: MVP 시스템 아키텍처와 배포/데이터 흐름
 - `technical/api-spec.md`: Workers API 엔드포인트와 요청/응답 명세
 - `technical/data-model.md`: D1 테이블 구조와 초기 migration
+- `technical/erd.md`: MVP ERD와 결제/로그인 확장 ERD
 - `references/course-ai-product-builder-weeks-1-5.md`: AI Product Builder 1~5주차 개발 참고 정리
 - `references/ai-product-builder-week5-summary.md`: 5주차 PDF 요약과 플러팅지옥 적용 포인트
 - 화면별 와이어프레임
