@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+
+# build outputs
+dist/
+build/
+.next/
+.output/
+.wrangler/
+
+# environment
+.env
+.env.*
+!.env.example
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# system
+.DS_Store
+
+# local editor
+.idea/
+.vscode/
+
+# generated
+coverage/
