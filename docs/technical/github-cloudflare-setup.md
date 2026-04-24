@@ -37,21 +37,22 @@ git push -u origin main
 5. GitHub 저장소 `kjh5848/flirting-hell`을 연결한다.
 6. 프론트엔드 앱 폴더와 빌드 명령은 실제 Vite 앱 생성 후 설정한다.
 
-## 예상 빌드 설정
+## Pages 빌드 설정
 
-프론트엔드가 `apps/web`에 생성될 경우:
+현재 프로젝트는 npm workspaces 모노레포다. `apps/web`이 `packages/shared`를 참조하므로 Cloudflare Pages는 저장소 루트에서 의존성을 설치해야 한다.
 
-- Framework preset: `Vite`
-- Build command: `npm run build`
-- Build output directory: `dist`
-- Root directory: `apps/web`
+권장 설정:
 
-프로젝트 루트에 생성될 경우:
-
-- Framework preset: `Vite`
-- Build command: `npm run build`
-- Build output directory: `dist`
+- Framework preset: `React (Vite)` 또는 `Vite`
 - Root directory: `/`
+- Build command: `npm run build:web`
+- Build output directory: `apps/web/dist`
+
+주의:
+
+- Root directory를 `apps/web`으로 잡으면 `packages/shared` workspace 참조가 깨질 수 있다.
+- Cloudflare UI에서 preset을 고른 뒤 위 값으로 수동 수정한다.
+- API는 Pages Functions가 아니라 별도 Workers 앱인 `apps/api`로 배포한다.
 
 ## Workers 배포
 

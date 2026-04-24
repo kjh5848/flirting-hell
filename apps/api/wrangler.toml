@@ -1,0 +1,12 @@
+name = "flirting-hell-api"
+main = "src/index.ts"
+compatibility_date = "2026-04-24"
+
+[vars]
+FREE_DAILY_LIMIT = "3"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "flirting-hell-db"
+database_id = "replace-with-cloudflare-d1-database-id"
+migrations_dir = "migrations"
