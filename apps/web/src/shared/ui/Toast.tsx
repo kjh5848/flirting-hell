@@ -12,11 +12,12 @@ export function Toast({ message, tone = "info" }: ToastProps) {
 
   return (
     <div
+      role={tone === "error" ? "alert" : "status"}
       className={cn(
-        "rounded-2xl px-4 py-3 text-sm font-medium",
-        tone === "error" && "bg-rose-50 text-rose-700 ring-1 ring-rose-100",
-        tone === "success" && "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100",
-        tone === "info" && "bg-gray-100 text-gray-700 ring-1 ring-gray-200"
+        "rounded-3xl px-4 py-3 text-sm font-bold shadow-sm ring-1",
+        tone === "error" && "bg-rose-50 text-rose-700 ring-rose-100",
+        tone === "success" && "bg-emerald-50 text-emerald-700 ring-emerald-100",
+        tone === "info" && "bg-gray-100 text-gray-700 ring-gray-200"
       )}
     >
       {message}
