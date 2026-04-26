@@ -10,10 +10,10 @@ export function MessageInputCard({ value, onChange }: MessageInputCardProps) {
     <div>
       <div className="mb-3 flex items-end justify-between gap-3">
         <div>
-          <p className="text-sm font-bold text-gray-950">대화 내용</p>
-          <p className="mt-1 text-xs leading-5 text-gray-500">`나:`와 `상대:` 형식이면 말투 분석이 더 안정적입니다.</p>
+          <p className="text-sm font-black text-ink">대화 내용</p>
+          <p className="mt-1 text-xs leading-5 text-ink-muted">`나:`와 `상대:` 형식이면 더 정확합니다.</p>
         </div>
-        <span className="shrink-0 rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-gray-500">{value.length}자</span>
+        <span className="shrink-0 rounded-full bg-cream px-3 py-1 text-xs font-bold text-ink-muted ring-1 ring-ink/5">{value.length}자</span>
       </div>
       <Textarea
         value={value}

@@ -1,16 +1,42 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { UsageSummary } from "@flirting-hell/shared";
 import { AnalysisForm } from "../features/analysis/components/AnalysisForm";
 import { AnalysisLoading } from "../features/analysis/components/AnalysisLoading";
 import { AnalysisResult } from "../features/analysis/components/AnalysisResult";
 import { useAnalysis } from "../features/analysis/hooks/useAnalysis";
+import { CinematicIntroCanvas } from "../features/intro/components/CinematicIntroCanvas";
 import { StylePreferenceForm } from "../features/profile/components/StylePreferenceForm";
 import { useProfileSettings } from "../features/profile/hooks/useProfileSettings";
 import { FreeLimitNotice } from "../features/usage/components/FreeLimitNotice";
 import { UsageBadge } from "../features/usage/components/UsageBadge";
 import { useUsageQuota } from "../features/usage/hooks/useUsageQuota";
-import { Card } from "../shared/ui/Card";
 import { Toast } from "../shared/ui/Toast";
+
+type ToastState = {
+  message: string;
+  tone: "success" | "error" | "info";
+};
+
+const introStorageKey = "flirting-hell:intro-seen:v1";
+const flowSteps = [
+  {
+    id: "compose",
+    label: "1",
+    title: "대화 입력"
+  },
+  {
+    id: "review",
+    label: "2",
+    title: "분위기 확인"
+  },
+  {
+    id: "result",
+    label: "3",
+    title: "답장 선택"
+  }
+] as const;
+
+type FlowStepId = (typeof flowSteps)[number]["id"];
 
 function usageFromAnalysis(data: ReturnType<typeof useAnalysis>["data"], fallback: UsageSummary | null): UsageSummary | null {
   if (!data) {
@@ -23,32 +49,51 @@ function usageFromAnalysis(data: ReturnType<typeof useAnalysis>["data"], fallbac
   };
 }
 
-function EmptyResultState() {
+function FlowProgress({ activeStep }: { activeStep: FlowStepId }) {
+  const activeIndex = flowSteps.findIndex((step) => step.id === activeStep);
+
   return (
-    <Card className="overflow-hidden bg-white/80 p-0">
-      <div className="border-b border-gray-100 bg-gray-950 px-5 py-4 text-white">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-rose-200">Preview</p>
-        <h2 className="mt-2 text-2xl font-black">분석 결과가 여기에 표시됩니다.</h2>
+    <nav className="flow-progress" aria-label="답장 추천 단계">
+      {flowSteps.map((step, index) => {
+        const stateClassName = index < activeIndex ? "is-complete" : index === activeIndex ? "is-active" : "";
+
+        return (
+          <div key={step.id} className={`flow-step ${stateClassName}`}>
+            <span>{step.label}</span>
+            <p>{step.title}</p>
+          </div>
+        );
+      })}
+    </nav>
+  );
+}
+
+function OpeningIntro({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <div className="opening-intro" role="status" aria-label="플러팅지옥 시작 화면">
+      <div className="cinema-scene" aria-hidden="true">
+        <CinematicIntroCanvas />
+        <div className="cinema-vignette" />
       </div>
-      <div className="space-y-4 p-5">
-        <div className="rounded-3xl bg-gray-50 p-4">
-          <div className="h-3 w-24 rounded-full bg-gray-200" />
-          <div className="mt-4 h-5 w-3/4 rounded-full bg-gray-200" />
-          <div className="mt-3 h-3 w-full rounded-full bg-gray-100" />
-          <div className="mt-2 h-3 w-5/6 rounded-full bg-gray-100" />
-        </div>
-        <div className="grid gap-3 sm:grid-cols-3">
-          {["순한맛", "설렘맛", "직진맛"].map((label) => (
-            <div key={label} className="rounded-3xl border border-gray-100 bg-white p-4 shadow-sm">
-              <span className="rounded-full bg-gray-950 px-3 py-1 text-xs font-bold text-white">{label}</span>
-              <div className="mt-4 h-4 rounded-full bg-gray-100" />
-              <div className="mt-2 h-4 w-2/3 rounded-full bg-gray-100" />
-            </div>
-          ))}
-        </div>
-        <p className="text-center text-sm leading-6 text-gray-500">왼쪽에 대화를 붙여넣고 `AI로 답장 찾기`를 누르면 mock 결과로 먼저 UI 흐름을 확인합니다.</p>
+      <div className="opening-copy">
+        <p>FLIRTING HELL</p>
+        <h2>플러팅지옥</h2>
+        <span>대화 루프에서 답장으로 탈출</span>
       </div>
-    </Card>
+      <button type="button" className="opening-skip" onClick={onDismiss}>바로 시작</button>
+    </div>
+  );
+}
+
+function AppBottomNav() {
+  return (
+    <nav className="app-bottom-nav" aria-label="앱 메뉴">
+      <span className="is-active">홈</span>
+      <span>기록</span>
+      <span>내 정보</span>
+      <span>가이드</span>
+      <span>더보기</span>
+    </nav>
   );
 }
 
@@ -56,51 +101,108 @@ export function AnalysisPage() {
   const usage = useUsageQuota();
   const profile = useProfileSettings();
   const analysis = useAnalysis({ onCompleted: usage.reload });
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toast, setToast] = useState<ToastState | null>(null);
+  const [isIntroVisible, setIsIntroVisible] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    return !window.sessionStorage.getItem(introStorageKey) && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  });
 
   const displayUsage = usageFromAnalysis(analysis.data, usage.usage);
   const isLimitReached = analysis.error?.includes("무료 분석 3회") ?? false;
+  const activeStep: FlowStepId = analysis.isLoading ? "review" : analysis.data ? "result" : "compose";
+  const showToast = (message: string, tone: ToastState["tone"] = "success") => setToast({ message, tone });
+  const dismissIntro = () => {
+    window.sessionStorage.setItem(introStorageKey, "true");
+    setIsIntroVisible(false);
+  };
+  const replayIntro = () => {
+    window.sessionStorage.removeItem(introStorageKey);
+    setIsIntroVisible(true);
+  };
+  const restartAnalysis = () => {
+    analysis.reset();
+    window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  };
+
+  useEffect(() => {
+    document.documentElement.scrollLeft = 0;
+    document.body.scrollLeft = 0;
+  }, []);
+
+  useEffect(() => {
+    if (!isIntroVisible) {
+      return;
+    }
+
+    const timerId = window.setTimeout(dismissIntro, 3600);
+    return () => window.clearTimeout(timerId);
+  }, [isIntroVisible]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }, [activeStep]);
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#ffe4e6,transparent_30%),radial-gradient(circle_at_top_right,#fed7aa,transparent_24%),linear-gradient(180deg,#fff7ed_0%,#ffffff_48%,#f8fafc_100%)] px-4 py-5 text-gray-950 sm:px-6 lg:py-8">
-      <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(420px,1.08fr)]">
-        <section className="space-y-5 lg:sticky lg:top-6 lg:self-start">
-          <header className="rounded-[32px] bg-white/70 p-5 shadow-soft ring-1 ring-black/5 backdrop-blur">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <p className="text-xs font-black tracking-[0.32em] text-hell-600">FLIRTING HELL</p>
-                <h1 className="mt-3 text-4xl font-black leading-none tracking-[-0.05em] text-gray-950 sm:text-5xl">플러팅지옥</h1>
-                <p className="mt-3 max-w-md text-base leading-7 text-gray-600">플러팅 무한루프 탈출. 지금 보낼 한마디를 찾다.</p>
-              </div>
+    <main className="relative min-h-screen w-full max-w-full overflow-hidden bg-[#fbf3f0] text-ink">
+      {isIntroVisible ? <OpeningIntro onDismiss={dismissIntro} /> : null}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[linear-gradient(180deg,#fff7f3,rgba(255,247,243,0))]" />
+
+      <div className="motion-app-shell app-frame relative mx-auto flex min-h-screen w-full max-w-[480px] flex-col px-4 py-4">
+        <header className="app-header sticky top-0 z-10 -mx-4 mb-3 border-b border-black/[0.04] bg-[#fbf3f0]/88 px-4 py-3 backdrop-blur">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[11px] font-black tracking-[0.24em] text-hell-600">FLIRTING HELL</p>
+              <h1 className="mt-1 text-2xl font-black leading-none tracking-[-0.055em] text-ink">플러팅지옥</h1>
+            </div>
+            <div className="flex shrink-0 flex-col items-end gap-2">
               <UsageBadge usage={displayUsage} isLoading={usage.isLoading && !analysis.data} />
+              <button
+                type="button"
+                className="rounded-full bg-white px-3 py-1.5 text-[11px] font-black text-ink-muted shadow-sm ring-1 ring-black/[0.05] transition hover:-translate-y-0.5 hover:text-ink focus:outline-none focus-visible:ring-4 focus-visible:ring-hell-200"
+                onClick={replayIntro}
+              >
+                인트로 보기
+              </button>
             </div>
-            <div className="mt-5 grid grid-cols-3 gap-2 text-center text-xs font-bold text-gray-500">
-              <div className="rounded-2xl bg-white px-3 py-3 ring-1 ring-gray-100">1. 대화 입력</div>
-              <div className="rounded-2xl bg-white px-3 py-3 ring-1 ring-gray-100">2. 스타일 선택</div>
-              <div className="rounded-2xl bg-gray-950 px-3 py-3 text-white">3. 답장 복사</div>
-            </div>
-          </header>
+          </div>
+          <p className="mt-2 text-sm font-semibold leading-6 text-ink-muted">대화 흐름을 보고, 지금 보낼 말만 고릅니다.</p>
+        </header>
 
-          <AnalysisForm preferences={profile.preferences} isLoading={analysis.isLoading} onSubmit={analysis.analyze} />
+        <div className="flex flex-1 flex-col gap-4 pb-6">
+          <FlowProgress activeStep={activeStep} />
 
-          <Card>
-            <div className="mb-4">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">내 연애 스타일</p>
-              <h2 className="mt-2 text-xl font-black text-gray-950">이상형은 고정값이 아니라 경고등입니다.</h2>
-              <p className="mt-2 text-sm leading-6 text-gray-600">AI는 상대를 만나도 되는지 단정하지 않고, 내 스타일과 다른 지점만 현실적으로 알려줍니다.</p>
-            </div>
-            <StylePreferenceForm value={profile.preferences} onChange={profile.updatePreferences} />
-          </Card>
-        </section>
-
-        <section className="space-y-4">
-          <Toast message={toastMessage} tone="success" />
-          <Toast message={analysis.error} tone="error" />
-          {isLimitReached ? <FreeLimitNotice /> : null}
-          {analysis.isLoading ? <AnalysisLoading /> : null}
-          {analysis.data ? <AnalysisResult data={analysis.data} onCopied={setToastMessage} /> : null}
-          {!analysis.data && !analysis.isLoading ? <EmptyResultState /> : null}
-        </section>
+          <section className={`stage-viewport is-${activeStep}`} aria-live="polite">
+            <Toast message={toast?.message ?? null} tone={toast?.tone ?? "success"} />
+            <Toast message={analysis.error} tone="error" />
+            {isLimitReached ? <FreeLimitNotice /> : null}
+            {isLimitReached && analysis.data ? <p className="rounded-2xl bg-white/70 px-4 py-3 text-sm font-bold text-ink-muted ring-1 ring-ink/10">아래 결과는 이전 분석 결과입니다.</p> : null}
+            {activeStep === "compose" ? (
+              <div className="stage-screen">
+                <AnalysisForm preferences={profile.preferences} isLoading={analysis.isLoading} onSubmit={analysis.analyze} />
+                <details className="group mt-4 rounded-[24px] bg-white p-4 shadow-sm ring-1 ring-black/[0.04]">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-[0.18em] text-ink-faint">Dating Style</p>
+                      <h2 className="mt-1 text-base font-black text-ink">내 연애 스타일</h2>
+                    </div>
+                    <span className="rounded-full bg-cream px-3 py-1 text-xs font-black text-ink-muted ring-1 ring-ink/5 group-open:hidden">열기</span>
+                    <span className="hidden rounded-full bg-cream px-3 py-1 text-xs font-black text-ink-muted ring-1 ring-ink/5 group-open:inline">닫기</span>
+                  </summary>
+                  <div className="mt-4">
+                    <p className="mb-4 text-sm leading-6 text-ink-muted">판정표가 아니라 경고등입니다. “만나라/말라”를 결정하지 않고, 확인할 점만 알려줍니다.</p>
+                    <StylePreferenceForm value={profile.preferences} onChange={profile.updatePreferences} />
+                  </div>
+                </details>
+              </div>
+            ) : null}
+            {activeStep === "review" ? <AnalysisLoading /> : null}
+            {activeStep === "result" && analysis.data ? <AnalysisResult data={analysis.data} onCopied={showToast} onRestart={restartAnalysis} /> : null}
+          </section>
+          <AppBottomNav />
+        </div>
       </div>
     </main>
   );

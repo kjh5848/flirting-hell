@@ -27,11 +27,11 @@ const groups: Array<{ key: PreferenceKey; title: string; options: readonly strin
 
 export function StylePreferenceForm({ value, onChange }: StylePreferenceFormProps) {
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {groups.map((group) => (
         <div key={group.key}>
-          <p className="mb-2 text-sm font-bold text-gray-800">{group.title}</p>
-          <div className="flex flex-wrap gap-2">
+          <p className="mb-2 text-sm font-black text-ink">{group.title}</p>
+          <div className="flex flex-wrap gap-1.5">
             {group.options.map((option) => (
               <Chip
                 key={option}

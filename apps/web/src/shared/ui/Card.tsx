@@ -6,5 +6,5 @@ type CardProps = PropsWithChildren<{
 }>;
 
 export function Card({ children, className }: CardProps) {
-  return <section className={cn("rounded-[28px] bg-white p-5 shadow-soft ring-1 ring-black/5", className)}>{children}</section>;
+  return <section className={cn("rounded-[32px] bg-white p-5 shadow-soft ring-1 ring-ink/[0.06]", className)}>{children}</section>;
 }

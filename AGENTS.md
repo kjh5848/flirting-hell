@@ -123,6 +123,7 @@ Do not set the root directory to `apps/web` unless workspace/shared package beha
 ## Coding Rules
 
 - Keep changes small and aligned with existing docs/specs.
+- Before changing visual UI, read `DESIGN.md` and keep colors, typography, spacing, motion, and component hierarchy aligned with it.
 - Use TypeScript types from `packages/shared` for frontend/API contracts.
 - Do not duplicate enums across web/api if they belong in `packages/shared`.
 - Components should follow the feature-slice structure documented in `docs/technical/react-component-architecture.md`.

@@ -31,10 +31,17 @@ export function useAnalysis(options: UseAnalysisOptions = {}) {
     }
   }
 
+  function reset() {
+    setData(null);
+    setError(null);
+    setIsLoading(false);
+  }
+
   return {
     data,
     error,
     isLoading,
-    analyze
+    analyze,
+    reset
   };
 }

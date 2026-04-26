@@ -8,16 +8,16 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const variantClassName: Record<ButtonVariant, string> = {
-  primary: "bg-gray-950 text-white shadow-soft hover:bg-gray-800 disabled:bg-gray-300",
-  secondary: "bg-white text-gray-950 ring-1 ring-gray-200 hover:bg-gray-50 disabled:text-gray-400",
-  ghost: "bg-transparent text-gray-600 hover:bg-white/70 disabled:text-gray-300"
+  primary: "bg-hell-600 text-white shadow-[0_18px_45px_rgba(228,63,90,0.24)] hover:bg-hell-700 disabled:bg-ink/20",
+  secondary: "bg-white text-ink ring-1 ring-ink/10 hover:bg-cream disabled:text-ink/35",
+  ghost: "bg-transparent text-ink-muted hover:bg-white/70 disabled:text-ink/30"
 };
 
 export function Button({ className, variant = "primary", ...props }: ButtonProps) {
   return (
     <button
       className={cn(
-        "inline-flex min-h-11 cursor-pointer items-center justify-center rounded-2xl px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gray-950/15 disabled:cursor-not-allowed",
+        "inline-flex min-h-11 cursor-pointer items-center justify-center rounded-full px-4 py-2 text-sm font-black transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-hell-600/15 disabled:cursor-not-allowed",
         variantClassName[variant],
         className
       )}
