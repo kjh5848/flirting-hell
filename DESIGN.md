@@ -132,6 +132,7 @@ tokens:
 - **Max content width:** 480px.
 - **Radius:** 입력 26px, 주요 카드 32px, 보조 카드 28px, 칩은 pill.
 - **Primary hierarchy:** 답장 카드가 결과 화면의 주인공이다. 분위기/스타일/경고는 답장을 고르기 위한 보조 정보다.
+- **Skeleton-first rule:** 색상/그림자/3D/일러스트를 적용하기 전에 `docs/design/app-redesign-v2/skeleton-ui-standard.md` 기준으로 화면 구조를 먼저 검증한다.
 
 ## Components
 
@@ -172,3 +173,4 @@ tokens:
 | 2026-04-25 | Post-intro cinematic flow added | 인트로가 끝난 뒤에도 대화 입력, 분위기 확인, 답장 선택이 이어지는 웹 UX로 제품 개성을 유지한다. |
 | 2026-04-25 | AI-console metaphor removed | 사용자가 AI 도구를 조작하는 느낌보다 연애 대화를 정리하고 답장을 고르는 생활형 웹앱 UX가 더 적합하다. |
 | 2026-04-25 | A direction selected for redesign v2 | Things 3의 정돈형 앱 구조와 Tinder의 따뜻한 포인트를 결합한 A안을 최종 UI 기준으로 삼는다. |
+| 2026-04-26 | Skeleton-first design gate added | 색을 입히기 전에 정보 구조, 단계 전환, CTA 위치, 모바일 폭 대응을 먼저 검증한다. |
