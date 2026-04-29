@@ -23,6 +23,7 @@
 - `product/mvp-spec.md`: V1 화면 흐름, 입력값, AI 출력 포맷
 - `product/ai-response-schema.md`: AI 응답 데이터 구조
 - `product/screen-flow.md`: 앱 화면 흐름과 결과 화면 구조
+- `product/app-information-architecture.md`: 인트로 이후 실제 앱의 홈/상담/저장/내 정보/분석권 구조
 - `product/wireframes.md`: 모바일 우선 웹 UI 와이어프레임
 - `product/tone-profile.md`: 사용자 말투 분석과 답장 반영 방식
 - `product/monetization-metrics.md`: 무료/유료 구분과 제품 지표
