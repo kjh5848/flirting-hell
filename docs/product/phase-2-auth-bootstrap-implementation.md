@@ -38,14 +38,14 @@ Authorization: Bearer dev:local-user-1
 
 - Kakao access token 검증
 - Firebase custom token 발급
-- Flutter Firebase Auth 실제 로그인 provider 연결
-- Dio interceptor와 token refresh 재시도
+- Firebase ID token refresh 재시도
+- Apple/Google/Kakao 버튼 연결
 
 ## 다음 작업
 
-1. Flutter Firebase Auth 로그인 provider, Dio interceptor 연결
+1. Firebase Auth ID token mode에서 백엔드 `local,firebase` 프로필 연동 검증
 2. Kakao token exchange 실제 adapter 구현
-3. 로그인 후 Flutter bootstrap API 호출 연결
+3. Apple/Google/Kakao 로그인 버튼 연결
 
 ## FlutterFire client 설정
 
@@ -77,6 +77,35 @@ Android `firebase_auth`가 SDK 23 이상을 요구하므로 앱의 `minSdk`는 `
 - `firebase_core`: `3.1.1`
 - `firebase_auth`: `5.1.1`
 - `dio`: `5.9.2`
+
+## Flutter Auth와 API bootstrap 연결
+
+앱 로그인 화면은 두 경로를 둔다.
+
+| 버튼 | 용도 | 서버 토큰 |
+|---|---|---|
+| Firebase로 시작 | Firebase Auth 익명 로그인으로 실제 Firebase 사용자 uid 생성 | 기본 로컬에서는 `dev:<uid>` |
+| 로컬 개발용 로그인 | Firebase 없이 앱 shell과 보호 라우트 빠른 검증 | `dev:local-user-1` |
+
+Dio client는 `AppEnv.apiBaseUrl`로 API를 호출하고, 요청 전에 `AuthController.authorizationToken()` 값을 `Authorization: Bearer ...` 헤더로 붙인다.
+
+기본값은 로컬 Spring 기본 프로필과 맞추기 위해 개발용 token을 사용한다.
+
+```bash
+flutter run \
+  --dart-define=API_BASE_URL=http://localhost:8080/api \
+  --dart-define=USE_DEVELOPMENT_AUTH_TOKEN=true
+```
+
+Firebase Admin SDK로 실제 ID token을 검증하려면 서버는 `local,firebase` 프로필로 실행하고 앱은 개발용 token을 끈다.
+
+```bash
+flutter run \
+  --dart-define=API_BASE_URL=http://localhost:8080/api \
+  --dart-define=USE_DEVELOPMENT_AUTH_TOKEN=false
+```
+
+Android emulator에서 로컬 Mac의 Spring 서버를 호출할 때는 `localhost` 대신 `10.0.2.2`를 사용한다.
 
 주의:
 

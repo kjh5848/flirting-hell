@@ -11,7 +11,7 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bootstrap = ref.watch(bootstrapProvider);
+    final bootstrap = ref.watch(bootstrapProvider).valueOrNull;
     final profile = bootstrap?.user.profile;
 
     return ScreenFrame(

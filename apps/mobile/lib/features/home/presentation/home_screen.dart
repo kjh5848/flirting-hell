@@ -11,7 +11,8 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bootstrap = ref.watch(bootstrapProvider);
+    final bootstrapAsync = ref.watch(bootstrapProvider);
+    final bootstrap = bootstrapAsync.valueOrNull;
     final nickname = bootstrap?.user.profile.nickname ?? '사용자';
 
     return ScreenFrame(
@@ -40,16 +41,63 @@ class HomeScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 16),
-        if (bootstrap != null)
-          for (final room in bootstrap.recentRooms) ...[
-            _RecentRoomTile(
-              name: room.alias,
-              summary: room.currentConcern,
-              time: '최근',
-            ),
-            const SizedBox(height: 10),
-          ],
+        bootstrapAsync.when(
+          data: (snapshot) {
+            final rooms = snapshot?.recentRooms ?? const [];
+            if (rooms.isEmpty) {
+              return const _BootstrapStateCard(
+                title: '아직 상담방이 없어요',
+                body: '첫 상담방을 만들면 상대별 요약과 추천 답장을 이곳에서 확인합니다.',
+              );
+            }
+
+            return Column(
+              children: [
+                for (final room in rooms) ...[
+                  _RecentRoomTile(
+                    name: room.alias,
+                    summary: room.currentConcern,
+                    time: '최근',
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ],
+            );
+          },
+          error: (error, stackTrace) => const _BootstrapStateCard(
+            title: '서버 연결이 필요해요',
+            body: 'Spring 백엔드를 실행하면 Firebase 사용자 기준 bootstrap 데이터를 불러옵니다.',
+          ),
+          loading: () => const _BootstrapStateCard(
+            title: '내 정보를 불러오는 중',
+            body: '사용자 설정, 분석권, 최근 상담방을 확인하고 있습니다.',
+          ),
+        ),
       ],
+    );
+  }
+}
+
+class _BootstrapStateCard extends StatelessWidget {
+  const _BootstrapStateCard({
+    required this.title,
+    required this.body,
+  });
+
+  final String title;
+  final String body;
+
+  @override
+  Widget build(BuildContext context) {
+    return SectionCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 8),
+          Text(body, style: Theme.of(context).textTheme.bodyMedium),
+        ],
+      ),
     );
   }
 }

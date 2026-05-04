@@ -12,4 +12,8 @@ class AppEnv {
     'API_BASE_URL',
     defaultValue: 'http://localhost:8080/api',
   );
+  static const useDevelopmentAuthToken = bool.fromEnvironment(
+    'USE_DEVELOPMENT_AUTH_TOKEN',
+    defaultValue: true,
+  );
 }

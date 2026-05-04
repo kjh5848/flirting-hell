@@ -67,6 +67,20 @@ npm run analyze:mobile
 npm run test:mobile
 ```
 
+로컬 Spring API를 함께 볼 때:
+
+```bash
+cd apps/mobile
+flutter run --dart-define=API_BASE_URL=http://localhost:8080/api
+```
+
+Android emulator는 Mac의 로컬 서버를 `localhost`로 볼 수 없으므로 다음 주소를 사용한다.
+
+```bash
+cd apps/mobile
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8080/api
+```
+
 Firebase client 설정은 FlutterFire CLI가 생성한 파일을 사용한다.
 
 ```text
