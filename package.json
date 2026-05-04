@@ -10,9 +10,19 @@
   "scripts": {
     "dev:web": "npm --workspace @flirting-hell/web run dev",
     "dev:api": "npm --workspace @flirting-hell/api run dev",
+    "dev:backend": "cd apps/backend && ./gradlew bootRun",
+    "dev:backend:local": "cd apps/backend && SPRING_PROFILES_ACTIVE=local ./gradlew bootRun",
+    "dev:backend:firebase": "cd apps/backend && SPRING_PROFILES_ACTIVE=local,firebase ./gradlew bootRun",
+    "dev:mobile": "cd apps/mobile && flutter run",
+    "dev:db": "docker compose up -d postgres",
+    "stop:db": "docker compose stop postgres",
     "build": "npm run build:web",
     "build:web": "npm --workspace @flirting-hell/web run build",
     "build:api": "npm --workspace @flirting-hell/api run build",
+    "build:backend": "cd apps/backend && ./gradlew build",
+    "analyze:mobile": "cd apps/mobile && flutter analyze",
+    "test:backend": "cd apps/backend && ./gradlew test",
+    "test:mobile": "cd apps/mobile && flutter test",
     "typecheck": "npm run typecheck --workspaces --if-present"
   },
   "engines": {

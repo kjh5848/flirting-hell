@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: flirting-hell-postgres
+    environment:
+      POSTGRES_DB: flirting_hell
+      POSTGRES_USER: flirting_hell
+      POSTGRES_PASSWORD: flirting_hell
+    ports:
+      - "55432:5432"
+    volumes:
+      - flirting_hell_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flirting_hell -d flirting_hell"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  flirting_hell_postgres_data:

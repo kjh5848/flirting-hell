@@ -16,7 +16,9 @@
 - 핵심 가치는 상대를 조종하는 기술이 아니라, 부담을 줄이고 호감을 자연스럽게 표현하는 AI 연애 코칭이다.
 - 첫 타깃은 특정 성별이 아니라 `연애 초보 전체`로 잡고, 온보딩에서 관심 대상과 대화 맥락을 개인화한다.
 - 첫 유료 모델은 월 구독이 아니라 `분석권 패키지`로 시작한다.
-- MVP는 Cloudflare Pages, Workers, D1, Polar 기반 모바일 웹/PWA로 먼저 만든다.
+- 앱 전용 제품은 `Flutter + Spring Boot + PostgreSQL`을 기준으로 전환한다.
+- React 웹은 랜딩, 정책, 고객지원, 운영 화면과 프로토타입 레퍼런스로 유지한다.
+- 앱 내부 분석권 판매는 RevenueCat 기반 인앱결제와 AdMob 리워드 광고를 우선한다.
 
 ## 다음에 작성할 문서
 
@@ -24,6 +26,7 @@
 - `product/ai-response-schema.md`: AI 응답 데이터 구조
 - `product/screen-flow.md`: 앱 화면 흐름과 결과 화면 구조
 - `product/app-information-architecture.md`: 인트로 이후 실제 앱의 홈/상담/저장/내 정보/분석권 구조
+- `product/app-flow-v2.md`: 상담방 중심 V2 단계형 UX와 설정 타이밍
 - `product/wireframes.md`: 모바일 우선 웹 UI 와이어프레임
 - `product/tone-profile.md`: 사용자 말투 분석과 답장 반영 방식
 - `product/monetization-metrics.md`: 무료/유료 구분과 제품 지표
@@ -36,9 +39,17 @@
 - `technical/github-cloudflare-setup.md`: GitHub 저장소와 Cloudflare Pages 연결 절차
 - `technical/react-component-architecture.md`: React 컴포넌트 관리 구조와 시각화
 - `technical/mvp-architecture.md`: MVP 시스템 아키텍처와 배포/데이터 흐름
+- `technical/native-app-architecture.md`: Flutter 앱, React 웹, Spring Boot, PostgreSQL 기준 앱 전용 아키텍처
+- `technical/flutter-app-tech-spec.md`: Flutter 앱 구조, 라우팅, 상태관리, 로컬 저장, 공유받기, 결제/광고 연동
+- `technical/spring-backend-tech-spec.md`: Spring Boot DDD 패키지 구조, 인증, 분석, 결제/광고 ledger, 운영/테스트 기준
+- `technical/app-api-spec-v2.md`: Flutter 앱과 Spring Boot 백엔드 사이의 API v2 계약
+- `technical/data-model-v2.md`: PostgreSQL 기준 앱 전용 서버 데이터 모델과 DDD context별 테이블
 - `technical/api-spec.md`: Workers API 엔드포인트와 요청/응답 명세
 - `technical/data-model.md`: D1 테이블 구조와 초기 migration
 - `technical/erd.md`: MVP ERD와 결제/로그인 확장 ERD
+- `decisions/0005-native-app-spring-stack.md`: 앱 전용 Flutter/Spring/PostgreSQL 전환 결정
+- `product/native-app-development-phases.md`: 앱 전용 Flutter/Spring 구현 페이즈와 완료 조건
+- `product/phase-2-auth-bootstrap-implementation.md`: Phase 2 인증/bootstrap skeleton 구현 메모
 - `references/course-ai-product-builder-weeks-1-5.md`: AI Product Builder 1~5주차 개발 참고 정리
 - `references/ai-product-builder-week5-summary.md`: 5주차 PDF 요약과 플러팅지옥 적용 포인트
 - 화면별 와이어프레임

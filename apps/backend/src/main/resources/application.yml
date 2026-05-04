@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: flirting-hell-backend
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+flirting-hell:
+  firebase:
+    project-id: ${FLIRTING_HELL_FIREBASE_PROJECT_ID:}
+    service-account-path: ${FLIRTING_HELL_FIREBASE_SERVICE_ACCOUNT_PATH:}
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: default
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: ${FLIRTING_HELL_DB_URL:jdbc:postgresql://localhost:55432/flirting_hell}
+    username: ${FLIRTING_HELL_DB_USERNAME:flirting_hell}
+    password: ${FLIRTING_HELL_DB_PASSWORD:flirting_hell}
+  flyway:
+    enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
