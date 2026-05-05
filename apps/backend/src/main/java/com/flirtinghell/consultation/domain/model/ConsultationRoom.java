@@ -41,4 +41,21 @@ public record ConsultationRoom(
 				now
 		);
 	}
+
+	public ConsultationRoom withAnalysisResult(String summary, Instant now) {
+		return new ConsultationRoom(
+				id,
+				userId,
+				alias,
+				relationshipStage,
+				currentConcern,
+				cautionNotes,
+				preferredStrategyId,
+				summary,
+				savedReplyCount + 1,
+				archivedAt,
+				createdAt,
+				now
+		);
+	}
 }

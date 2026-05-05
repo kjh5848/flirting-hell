@@ -39,6 +39,12 @@ class JpaConsultationRoomEntity {
 	@Column(name = "preferred_strategy_id")
 	private StrategyId preferredStrategyId;
 
+	@Column(name = "last_turn_summary", nullable = false)
+	private String lastTurnSummary;
+
+	@Column(name = "saved_reply_count", nullable = false)
+	private int savedReplyCount;
+
 	@Column(name = "archived_at")
 	private Instant archivedAt;
 
@@ -59,6 +65,8 @@ class JpaConsultationRoomEntity {
 			String currentConcern,
 			String cautionNotes,
 			StrategyId preferredStrategyId,
+			String lastTurnSummary,
+			int savedReplyCount,
 			Instant archivedAt,
 			Instant createdAt,
 			Instant updatedAt
@@ -70,6 +78,8 @@ class JpaConsultationRoomEntity {
 		this.currentConcern = currentConcern;
 		this.cautionNotes = cautionNotes;
 		this.preferredStrategyId = preferredStrategyId;
+		this.lastTurnSummary = lastTurnSummary;
+		this.savedReplyCount = savedReplyCount;
 		this.archivedAt = archivedAt;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
@@ -84,6 +94,8 @@ class JpaConsultationRoomEntity {
 				room.currentConcern(),
 				room.cautionNotes(),
 				room.preferredStrategyId(),
+				room.lastTurnSummary(),
+				room.savedReplyCount(),
 				room.archivedAt(),
 				room.createdAt(),
 				room.updatedAt()
@@ -99,8 +111,8 @@ class JpaConsultationRoomEntity {
 				currentConcern,
 				cautionNotes,
 				preferredStrategyId,
-				"아직 분석 기록이 없어요",
-				0,
+				lastTurnSummary,
+				savedReplyCount,
 				archivedAt,
 				createdAt,
 				updatedAt

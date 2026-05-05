@@ -5,6 +5,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import com.flirtinghell.analysis.application.service.AnalysisService;
+import com.flirtinghell.analysis.domain.repository.AnalysisTurnRepository;
 import com.flirtinghell.consultation.domain.model.ConsultationRoom;
 import com.flirtinghell.consultation.domain.model.RelationshipStage;
 import com.flirtinghell.consultation.domain.model.StrategyId;
@@ -20,15 +22,18 @@ public class RoomService {
 
 	private final UserBootstrapService userBootstrapService;
 	private final ConsultationRoomRepository consultationRoomRepository;
+	private final AnalysisTurnRepository analysisTurnRepository;
 	private final Clock clock;
 
 	public RoomService(
 			UserBootstrapService userBootstrapService,
 			ConsultationRoomRepository consultationRoomRepository,
+			AnalysisTurnRepository analysisTurnRepository,
 			Clock clock
 	) {
 		this.userBootstrapService = userBootstrapService;
 		this.consultationRoomRepository = consultationRoomRepository;
+		this.analysisTurnRepository = analysisTurnRepository;
 		this.clock = clock;
 	}
 
@@ -61,7 +66,12 @@ public class RoomService {
 		String userId = userBootstrapService.bootstrap(firebaseUid).user().userId();
 		ConsultationRoom room = consultationRoomRepository.findByIdAndUserId(roomId, userId)
 				.orElseThrow(() -> new ResourceNotFoundException("ROOM_NOT_FOUND", "상담방을 찾을 수 없습니다."));
-		return new RoomDetailResult(RoomResult.from(room), List.of(), List.of());
+		List<AnalysisService.AnalysisTurnResult> recentTurns = analysisTurnRepository
+				.findRecentByRoomIdAndUserId(room.id(), userId, 20)
+				.stream()
+				.map(AnalysisService.AnalysisTurnResult::from)
+				.toList();
+		return new RoomDetailResult(RoomResult.from(room), recentTurns, List.of());
 	}
 
 	public record CreateRoomCommand(
@@ -127,7 +137,7 @@ public class RoomService {
 
 	public record RoomDetailResult(
 			RoomResult room,
-			List<Object> recentTurns,
+			List<AnalysisService.AnalysisTurnResult> recentTurns,
 			List<Object> savedReplies
 	) {
 	}

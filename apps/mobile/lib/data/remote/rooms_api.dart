@@ -36,6 +36,22 @@ class RoomsApi {
     return Room.fromJson(room);
   }
 
+  Future<AnalysisTurn> createAnalysis(
+    String roomId,
+    CreateAnalysisPayload payload,
+  ) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/rooms/$roomId/analyses',
+      data: payload.toJson(),
+    );
+    final data = _responseData(response);
+    final turn = data['turn'];
+    if (turn is! Map<String, dynamic>) {
+      throw StateError('Create analysis response data is invalid.');
+    }
+    return AnalysisTurn.fromJson(turn);
+  }
+
   Map<String, dynamic> _responseData(Response<Map<String, dynamic>> response) {
     final body = response.data;
     if (body == null) {

@@ -59,14 +59,63 @@ class RoomDetail {
   factory RoomDetail.fromJson(Map<String, dynamic> json) {
     return RoomDetail(
       room: Room.fromJson(_asMap(json['room'])),
-      recentTurns: _asList(json['recentTurns']),
+      recentTurns: _asList(json['recentTurns'])
+          .map((item) => AnalysisTurn.fromJson(_asMap(item)))
+          .toList(growable: false),
       savedReplies: _asList(json['savedReplies']),
     );
   }
 
   final Room room;
-  final List<Object?> recentTurns;
+  final List<AnalysisTurn> recentTurns;
   final List<Object?> savedReplies;
+}
+
+class AnalysisTurn {
+  const AnalysisTurn({
+    required this.turnId,
+    required this.sourceType,
+    required this.participantSummary,
+    required this.summary,
+    required this.currentState,
+    required this.recommendedStrategyId,
+    required this.warnings,
+    required this.primaryReply,
+    required this.alternativeReplies,
+    required this.replyReason,
+    required this.nextAction,
+    required this.createdAt,
+  });
+
+  factory AnalysisTurn.fromJson(Map<String, dynamic> json) {
+    return AnalysisTurn(
+      turnId: json['turnId'] as String,
+      sourceType: json['sourceType'] as String,
+      participantSummary: json['participantSummary'] as String,
+      summary: json['summary'] as String,
+      currentState: json['currentState'] as String,
+      recommendedStrategyId: json['recommendedStrategyId'] as String,
+      warnings: _asStringList(json['warnings']),
+      primaryReply: json['primaryReply'] as String,
+      alternativeReplies: _asStringList(json['alternativeReplies']),
+      replyReason: json['replyReason'] as String,
+      nextAction: json['nextAction'] as String,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+    );
+  }
+
+  final String turnId;
+  final String sourceType;
+  final String participantSummary;
+  final String summary;
+  final String currentState;
+  final String recommendedStrategyId;
+  final List<String> warnings;
+  final String primaryReply;
+  final List<String> alternativeReplies;
+  final String replyReason;
+  final String nextAction;
+  final DateTime createdAt;
 }
 
 class Room {
@@ -130,6 +179,23 @@ class CreateRoomPayload {
   }
 }
 
+class CreateAnalysisPayload {
+  const CreateAnalysisPayload({
+    required this.rawInput,
+    required this.requestedStrategyId,
+  });
+
+  final String rawInput;
+  final String? requestedStrategyId;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'rawInput': rawInput,
+      'requestedStrategyId': requestedStrategyId,
+    };
+  }
+}
+
 Map<String, dynamic> _asMap(Object? value) {
   if (value is Map<String, dynamic>) {
     return value;
@@ -145,4 +211,8 @@ List<Object?> _asList(Object? value) {
     return value;
   }
   throw StateError('Expected JSON list, got $value.');
+}
+
+List<String> _asStringList(Object? value) {
+  return _asList(value).map((item) => item as String).toList(growable: false);
 }
