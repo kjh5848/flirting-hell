@@ -8,6 +8,7 @@ spring:
 flirting-hell:
   firebase:
     project-id: ${FLIRTING_HELL_FIREBASE_PROJECT_ID:}
+    service-account-base64: ${FLIRTING_HELL_FIREBASE_SERVICE_ACCOUNT_BASE64:}
     service-account-path: ${FLIRTING_HELL_FIREBASE_SERVICE_ACCOUNT_PATH:}
 
 management:

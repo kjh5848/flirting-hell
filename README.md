@@ -56,6 +56,11 @@ Firebase Admin SDK 실행 전 필요한 환경 변수:
 
 ```bash
 export FLIRTING_HELL_FIREBASE_PROJECT_ID="firebase-project-id"
+
+# 방법 A: 서비스 계정 JSON을 base64로 주입한다.
+export FLIRTING_HELL_FIREBASE_SERVICE_ACCOUNT_BASE64="$(base64 -i /absolute/path/to/service-account.json)"
+
+# 방법 B: 서비스 계정 JSON 파일 경로를 주입한다.
 export FLIRTING_HELL_FIREBASE_SERVICE_ACCOUNT_PATH="/absolute/path/to/service-account.json"
 ```
 
@@ -63,6 +68,7 @@ export FLIRTING_HELL_FIREBASE_SERVICE_ACCOUNT_PATH="/absolute/path/to/service-ac
 
 ```bash
 npm run dev:mobile
+npm run dev:mobile:firebase
 npm run analyze:mobile
 npm run test:mobile
 ```
@@ -91,6 +97,7 @@ apps/mobile/firebase.json
 ```
 
 Firebase Admin 서비스 계정 JSON은 서버 검증용 비밀 파일이므로 repo에 저장하지 않는다.
+`dev:mobile:firebase`는 Android emulator 기준으로 실제 Firebase ID token을 Spring 서버에 보낸다.
 
 ## 앱 전용 개발 기준
 

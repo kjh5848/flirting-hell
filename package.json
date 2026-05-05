@@ -14,6 +14,7 @@
     "dev:backend:local": "cd apps/backend && SPRING_PROFILES_ACTIVE=local ./gradlew bootRun",
     "dev:backend:firebase": "cd apps/backend && SPRING_PROFILES_ACTIVE=local,firebase ./gradlew bootRun",
     "dev:mobile": "cd apps/mobile && flutter run",
+    "dev:mobile:firebase": "cd apps/mobile && flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8080/api --dart-define=USE_DEVELOPMENT_AUTH_TOKEN=false",
     "dev:db": "docker compose up -d postgres",
     "stop:db": "docker compose stop postgres",
     "build": "npm run build:web",

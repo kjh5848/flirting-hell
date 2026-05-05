@@ -1,6 +1,5 @@
 package com.flirtinghell.identity.adapter.out.firebase;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 
 import com.google.auth.oauth2.GoogleCredentials;
@@ -37,13 +36,6 @@ class FirebaseAdminConfig {
 	}
 
 	private GoogleCredentials resolveCredentials(Environment environment) throws IOException {
-		String serviceAccountPath = environment.getProperty("flirting-hell.firebase.service-account-path");
-		if (serviceAccountPath == null || serviceAccountPath.isBlank()) {
-			return GoogleCredentials.getApplicationDefault();
-		}
-
-		try (FileInputStream serviceAccount = new FileInputStream(serviceAccountPath)) {
-			return GoogleCredentials.fromStream(serviceAccount);
-		}
+		return FirebaseAdminCredentialSource.resolve(environment).credentials();
 	}
 }

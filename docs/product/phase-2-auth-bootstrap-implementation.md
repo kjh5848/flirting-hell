@@ -141,9 +141,16 @@ Firebase 실제 ID token 검증은 `firebase` 프로필에서만 활성화한다
 
 ```bash
 export FLIRTING_HELL_FIREBASE_PROJECT_ID="firebase-project-id"
+
+# 방법 A: 서비스 계정 JSON을 base64로 주입한다.
+export FLIRTING_HELL_FIREBASE_SERVICE_ACCOUNT_BASE64="$(base64 -i /absolute/path/to/service-account.json)"
+
+# 방법 B: 서비스 계정 JSON 파일 경로를 주입한다.
 export FLIRTING_HELL_FIREBASE_SERVICE_ACCOUNT_PATH="/absolute/path/to/service-account.json"
 npm run dev:backend:firebase
 ```
+
+두 값을 모두 설정하면 `FLIRTING_HELL_FIREBASE_SERVICE_ACCOUNT_BASE64`가 우선한다.
 
 프로필별 인증 adapter:
 
@@ -154,3 +161,9 @@ npm run dev:backend:firebase
 | `local,firebase` | Firebase Admin verifier | 실제 Firebase ID Token 검증 |
 
 서비스 계정 JSON은 repo에 저장하지 않는다.
+
+앱에서 실제 Firebase ID token을 보내는 Android emulator 실행 명령:
+
+```bash
+npm run dev:mobile:firebase
+```
