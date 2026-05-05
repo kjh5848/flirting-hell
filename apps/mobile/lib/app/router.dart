@@ -8,6 +8,7 @@ import '../features/auth/presentation/splash_screen.dart';
 import '../features/billing/presentation/billing_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
+import '../features/rooms/presentation/room_detail_screen.dart';
 import '../features/rooms/presentation/rooms_screen.dart';
 import '../features/saved_replies/presentation/saved_replies_screen.dart';
 
@@ -59,6 +60,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: '/rooms',
             pageBuilder: (context, state) => const NoTransitionPage(
               child: RoomsScreen(),
+            ),
+          ),
+          GoRoute(
+            path: '/rooms/:roomId',
+            pageBuilder: (context, state) => NoTransitionPage(
+              child: RoomDetailScreen(
+                roomId: state.pathParameters['roomId']!,
+              ),
             ),
           ),
           GoRoute(

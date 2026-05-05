@@ -26,6 +26,11 @@ public class GlobalExceptionHandler {
 		return build(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", "요청 값이 올바르지 않습니다.", request, details);
 	}
 
+	@ExceptionHandler(ResourceNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException exception, HttpServletRequest request) {
+		return build(HttpStatus.NOT_FOUND, exception.code(), exception.getMessage(), request, Map.of());
+	}
+
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> handleUnexpectedError(Exception exception, HttpServletRequest request) {
 		return build(HttpStatus.INTERNAL_SERVER_ERROR, "SERVER_ERROR", "서버 오류가 발생했습니다.", request, Map.of());

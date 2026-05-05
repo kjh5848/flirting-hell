@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 
+import com.flirtinghell.consultation.domain.model.ConsultationRoom;
+import com.flirtinghell.consultation.domain.repository.ConsultationRoomRepository;
 import com.flirtinghell.identity.domain.model.AppUser;
 import com.flirtinghell.identity.domain.model.AppUserStatus;
 import com.flirtinghell.identity.domain.repository.AppUserRepository;
@@ -21,15 +23,18 @@ public class UserBootstrapService {
 
 	private final AppUserRepository appUserRepository;
 	private final UserProfileRepository userProfileRepository;
+	private final ConsultationRoomRepository consultationRoomRepository;
 	private final Clock clock;
 
 	public UserBootstrapService(
 			AppUserRepository appUserRepository,
 			UserProfileRepository userProfileRepository,
+			ConsultationRoomRepository consultationRoomRepository,
 			Clock clock
 	) {
 		this.appUserRepository = appUserRepository;
 		this.userProfileRepository = userProfileRepository;
+		this.consultationRoomRepository = consultationRoomRepository;
 		this.clock = clock;
 	}
 
@@ -55,7 +60,7 @@ public class UserBootstrapService {
 						)
 				),
 				createUsageResult(now),
-				List.of()
+				recentRooms(user.id())
 		);
 	}
 
@@ -133,6 +138,25 @@ public class UserBootstrapService {
 				0,
 				new DailyLimitResult(usageDate, 3, 0, 3),
 				new DailyLimitResult(usageDate, 3, 0, 3)
+		);
+	}
+
+	private List<RecentRoomResult> recentRooms(String userId) {
+		return consultationRoomRepository.findRecentByUserId(userId, 3)
+				.stream()
+				.map(this::toRecentRoom)
+				.toList();
+	}
+
+	private RecentRoomResult toRecentRoom(ConsultationRoom room) {
+		return new RecentRoomResult(
+				room.id(),
+				room.alias(),
+				room.relationshipStage().name(),
+				room.currentConcern(),
+				room.lastTurnSummary(),
+				room.updatedAt(),
+				room.savedReplyCount()
 		);
 	}
 
