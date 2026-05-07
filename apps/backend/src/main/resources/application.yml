@@ -6,6 +6,12 @@ spring:
       - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
 
 flirting-hell:
+  ai:
+    provider: ${FLIRTING_HELL_AI_PROVIDER:mock}
+    openai:
+      base-url: ${FLIRTING_HELL_OPENAI_BASE_URL:https://api.openai.com/v1}
+      api-key: ${FLIRTING_HELL_OPENAI_API_KEY:${OPENAI_API_KEY:}}
+      model: ${FLIRTING_HELL_OPENAI_MODEL:gpt-4o-mini}
   firebase:
     project-id: ${FLIRTING_HELL_FIREBASE_PROJECT_ID:}
     service-account-base64: ${FLIRTING_HELL_FIREBASE_SERVICE_ACCOUNT_BASE64:}

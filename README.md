@@ -99,6 +99,30 @@ apps/mobile/firebase.json
 Firebase Admin 서비스 계정 JSON은 서버 검증용 비밀 파일이므로 repo에 저장하지 않는다.
 `dev:mobile:firebase`는 Android emulator 기준으로 실제 Firebase ID token을 Spring 서버에 보낸다.
 
+### AI 분석 provider
+
+기본 분석 provider는 `mock`이다.
+
+```bash
+export FLIRTING_HELL_AI_PROVIDER=mock
+```
+
+실제 OpenAI Responses API로 분석하려면 다음 값을 설정한다.
+
+```bash
+export FLIRTING_HELL_AI_PROVIDER=openai
+export FLIRTING_HELL_OPENAI_API_KEY="..."
+export FLIRTING_HELL_OPENAI_MODEL="gpt-4o-mini"
+```
+
+선택값:
+
+```bash
+export FLIRTING_HELL_OPENAI_BASE_URL="https://api.openai.com/v1"
+```
+
+AI 분석 계약은 `docs/product/ai-analysis-contract.md`를 따른다.
+
 ## 앱 전용 개발 기준
 
 - 앱: Flutter
