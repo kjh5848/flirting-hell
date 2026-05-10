@@ -61,12 +61,12 @@ npm run dev:mobile:firebase
 2. `POST /api/rooms/{roomId}/analyses` mock 분석 저장
 3. 분석 결과를 상담방 히스토리에 쌓기
 4. AI 분석 port 분리
-5. OpenAI Responses API adapter 1차 연결
+5. LLM provider factory와 GPT/Gemini/Claude adapter 1차 연결
 
 ### 남은 작업
 
 1. 상담방 수정 `PATCH /api/rooms/{roomId}`
-2. 실제 OpenAI API key로 분석 품질 확인
+2. 실제 GPT/Gemini/Claude API key로 분석 품질과 비용 비교
 3. 답장 복사/저장 이벤트와 분석권 차감 연결
 4. 실패한 분석 시도 기록과 재시도 정책 추가
 

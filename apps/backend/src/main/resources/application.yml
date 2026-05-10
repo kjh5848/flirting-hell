@@ -8,10 +8,18 @@ spring:
 flirting-hell:
   ai:
     provider: ${FLIRTING_HELL_AI_PROVIDER:mock}
-    openai:
-      base-url: ${FLIRTING_HELL_OPENAI_BASE_URL:https://api.openai.com/v1}
-      api-key: ${FLIRTING_HELL_OPENAI_API_KEY:${OPENAI_API_KEY:}}
-      model: ${FLIRTING_HELL_OPENAI_MODEL:gpt-4o-mini}
+    gpt:
+      base-url: ${FLIRTING_HELL_GPT_BASE_URL:${FLIRTING_HELL_OPENAI_BASE_URL:https://api.openai.com/v1}}
+      api-key: ${FLIRTING_HELL_GPT_API_KEY:${FLIRTING_HELL_OPENAI_API_KEY:${OPENAI_API_KEY:}}}
+      model: ${FLIRTING_HELL_GPT_MODEL:${FLIRTING_HELL_OPENAI_MODEL:gpt-4o-mini}}
+    gemini:
+      base-url: ${FLIRTING_HELL_GEMINI_BASE_URL:https://generativelanguage.googleapis.com}
+      api-key: ${FLIRTING_HELL_GEMINI_API_KEY:${GEMINI_API_KEY:}}
+      model: ${FLIRTING_HELL_GEMINI_MODEL:gemini-2.5-flash-lite}
+    claude:
+      base-url: ${FLIRTING_HELL_CLAUDE_BASE_URL:https://api.anthropic.com}
+      api-key: ${FLIRTING_HELL_CLAUDE_API_KEY:${ANTHROPIC_API_KEY:}}
+      model: ${FLIRTING_HELL_CLAUDE_MODEL:claude-haiku-4-5-20251001}
   firebase:
     project-id: ${FLIRTING_HELL_FIREBASE_PROJECT_ID:}
     service-account-base64: ${FLIRTING_HELL_FIREBASE_SERVICE_ACCOUNT_BASE64:}

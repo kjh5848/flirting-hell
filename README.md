@@ -107,18 +107,41 @@ Firebase Admin 서비스 계정 JSON은 서버 검증용 비밀 파일이므로 
 export FLIRTING_HELL_AI_PROVIDER=mock
 ```
 
-실제 OpenAI Responses API로 분석하려면 다음 값을 설정한다.
+실제 LLM API로 분석하려면 `gpt`, `gemini`, `claude` 중 하나를 고른다.
 
 ```bash
-export FLIRTING_HELL_AI_PROVIDER=openai
-export FLIRTING_HELL_OPENAI_API_KEY="..."
-export FLIRTING_HELL_OPENAI_MODEL="gpt-4o-mini"
+export FLIRTING_HELL_AI_PROVIDER=gpt
+export FLIRTING_HELL_GPT_API_KEY="..."
+export FLIRTING_HELL_GPT_MODEL="gpt-4o-mini"
 ```
+
+Gemini:
+
+```bash
+export FLIRTING_HELL_AI_PROVIDER=gemini
+export FLIRTING_HELL_GEMINI_API_KEY="..."
+export FLIRTING_HELL_GEMINI_MODEL="gemini-2.5-flash-lite"
+```
+
+Claude:
+
+```bash
+export FLIRTING_HELL_AI_PROVIDER=claude
+export FLIRTING_HELL_CLAUDE_API_KEY="..."
+export FLIRTING_HELL_CLAUDE_MODEL="claude-haiku-4-5-20251001"
+```
+
+호환 alias:
+
+- `openai` → `gpt`
+- `anthropic` → `claude`
 
 선택값:
 
 ```bash
-export FLIRTING_HELL_OPENAI_BASE_URL="https://api.openai.com/v1"
+export FLIRTING_HELL_GPT_BASE_URL="https://api.openai.com/v1"
+export FLIRTING_HELL_GEMINI_BASE_URL="https://generativelanguage.googleapis.com"
+export FLIRTING_HELL_CLAUDE_BASE_URL="https://api.anthropic.com"
 ```
 
 AI 분석 계약은 `docs/product/ai-analysis-contract.md`를 따른다.

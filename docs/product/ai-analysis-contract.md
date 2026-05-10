@@ -9,16 +9,24 @@
 1. AI 호출은 `analysis` bounded context의 outbound port 뒤에 숨긴다.
 2. 원본 대화 전문은 DB에 장기 저장하지 않고, 분석 요청 처리 중에만 사용한다.
 
-## 공식 API 기준
+## LLM provider 기준
 
-- OpenAI Responses API를 사용한다.
-- 답변은 Structured Outputs의 `text.format` / `json_schema` 방식으로 받는다.
+- 백엔드는 `AnalysisPort` 뒤에서 LLM provider를 팩토리로 선택한다.
+- 지원 provider는 `gpt`, `gemini`, `claude`다.
+- `openai`는 `gpt`, `anthropic`은 `claude` alias로 허용한다.
+- 답변은 provider별 구조화 출력 방식으로 받는다.
+  - GPT: Responses API `text.format` / `json_schema`
+  - Gemini: `generateContent`의 `generationConfig.responseFormat`
+  - Claude: Messages API tool use 강제 호출
 - 이유: 답장 카드 UI는 고정 필드가 필요하므로 자유 텍스트보다 JSON Schema가 안전하다.
 
 참고:
 
 - [OpenAI Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
 - [OpenAI latest model guidance](https://developers.openai.com/api/docs/guides/latest-model)
+- [Gemini Structured Outputs](https://ai.google.dev/gemini-api/docs/structured-output)
+- [Claude Messages API](https://docs.anthropic.com/en/api/messages)
+- [Claude Tool Use](https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/overview)
 
 ## 입력 계약
 
@@ -135,27 +143,45 @@ AI는 다음 방식으로 말한다.
 export FLIRTING_HELL_AI_PROVIDER=mock
 ```
 
-실제 OpenAI 호출:
+실제 GPT 호출:
 
 ```bash
-export FLIRTING_HELL_AI_PROVIDER=openai
-export FLIRTING_HELL_OPENAI_API_KEY="..."
-export FLIRTING_HELL_OPENAI_MODEL="gpt-4o-mini"
+export FLIRTING_HELL_AI_PROVIDER=gpt
+export FLIRTING_HELL_GPT_API_KEY="..."
+export FLIRTING_HELL_GPT_MODEL="gpt-4o-mini"
+```
+
+실제 Gemini 호출:
+
+```bash
+export FLIRTING_HELL_AI_PROVIDER=gemini
+export FLIRTING_HELL_GEMINI_API_KEY="..."
+export FLIRTING_HELL_GEMINI_MODEL="gemini-2.5-flash-lite"
+```
+
+실제 Claude 호출:
+
+```bash
+export FLIRTING_HELL_AI_PROVIDER=claude
+export FLIRTING_HELL_CLAUDE_API_KEY="..."
+export FLIRTING_HELL_CLAUDE_MODEL="claude-haiku-4-5-20251001"
 ```
 
 선택값:
 
 ```bash
-export FLIRTING_HELL_OPENAI_BASE_URL="https://api.openai.com/v1"
+export FLIRTING_HELL_GPT_BASE_URL="https://api.openai.com/v1"
+export FLIRTING_HELL_GEMINI_BASE_URL="https://generativelanguage.googleapis.com"
+export FLIRTING_HELL_CLAUDE_BASE_URL="https://api.anthropic.com"
 ```
 
 비밀값은 문서, 로그, 커밋에 남기지 않는다.
 
 ## 실패 처리
 
-1. OpenAI key가 없고 provider가 `openai`이면 분석 요청은 실패한다.
-2. OpenAI가 refusal을 반환하면 분석 요청은 실패 처리한다.
-3. 응답 본문에 output text가 없으면 분석 요청은 실패 처리한다.
+1. 선택한 provider의 API key가 없으면 분석 요청은 실패한다.
+2. GPT가 refusal을 반환하면 분석 요청은 실패 처리한다.
+3. provider 응답 본문에 구조화된 JSON이 없으면 분석 요청은 실패 처리한다.
 4. JSON Schema에 맞지 않는 응답은 파싱 실패로 처리한다.
 
 이후 단계에서 실패한 분석 시도는 `analysis_attempt`로 별도 저장할 수 있지만, 현재 Phase 3에서는 성공한 분석 결과만 저장한다.
