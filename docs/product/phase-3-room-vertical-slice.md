@@ -63,11 +63,12 @@ npm run dev:mobile:firebase
 4. AI 분석 port 분리
 5. LLM provider factory와 GPT/Gemini/Claude adapter 1차 연결
 6. 비용 없는 LLM 품질 fixture 테스트 세트
+7. 실제 provider 수동 품질 비교 리포트 러너
 
 ### 남은 작업
 
 1. 상담방 수정 `PATCH /api/rooms/{roomId}`
-2. 실제 GPT/Gemini/Claude API key로 fixture 품질과 비용 비교
+2. 실제 GPT/Gemini/Claude API key로 fixture 품질 리포트 생성 후 사람 리뷰
 3. 답장 복사/저장 이벤트와 분석권 차감 연결
 4. 실패한 분석 시도 기록과 재시도 정책 추가
 

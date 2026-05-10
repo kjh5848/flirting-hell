@@ -152,6 +152,16 @@ LLM 품질 fixture만 빠르게 확인하려면 다음 명령을 쓴다. 이 테
 npm run test:backend:analysis-quality
 ```
 
+실제 provider 품질 비교는 API key를 설정한 뒤 수동으로 실행한다.
+
+```bash
+export FLIRTING_HELL_AI_PROVIDER=gemini
+export FLIRTING_HELL_GEMINI_API_KEY="..."
+npm run test:backend:analysis-quality:real
+```
+
+결과는 `apps/backend/build/reports/analysis-quality/`에 저장된다.
+
 ## 앱 전용 개발 기준
 
 - 앱: Flutter

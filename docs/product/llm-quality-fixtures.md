@@ -55,3 +55,37 @@ npm run test:backend
 2. 응답의 `primaryReply`, `warnings`, `nextAction`을 사람이 리뷰한다.
 3. 비용, 지연 시간, 한국어 자연스러움, 안전성 실패를 표로 기록한다.
 4. 실제 API key가 필요한 테스트는 기본 CI에 넣지 않는다.
+
+## 실제 provider 수동 러너
+
+실제 provider 호출은 명시적으로만 실행한다.
+
+```bash
+export FLIRTING_HELL_AI_PROVIDER=gemini
+export FLIRTING_HELL_GEMINI_API_KEY="..."
+npm run test:backend:analysis-quality:real
+```
+
+Provider별 예시:
+
+```bash
+export FLIRTING_HELL_AI_PROVIDER=gpt
+export FLIRTING_HELL_GPT_API_KEY="..."
+npm run test:backend:analysis-quality:real
+```
+
+```bash
+export FLIRTING_HELL_AI_PROVIDER=claude
+export FLIRTING_HELL_CLAUDE_API_KEY="..."
+npm run test:backend:analysis-quality:real
+```
+
+리포트 출력:
+
+```text
+apps/backend/build/reports/analysis-quality/{provider}-analysis-quality.md
+apps/backend/build/reports/analysis-quality/{provider}-analysis-quality.json
+```
+
+리포트에는 fixture ID, source type, 추천 전략, 지연 시간, 추천 답장, 경고, 다음 행동만 저장한다.
+원본 `rawInput` 전문은 저장하지 않는다.

@@ -23,7 +23,8 @@
     "build:backend": "cd apps/backend && ./gradlew build",
     "analyze:mobile": "cd apps/mobile && flutter analyze",
     "test:backend": "cd apps/backend && ./gradlew test",
-    "test:backend:analysis-quality": "cd apps/backend && ./gradlew test --tests 'com.flirtinghell.analysis.adapter.out.ai.AnalysisQualityFixtureTest'",
+    "test:backend:analysis-quality": "cd apps/backend && ./gradlew test --tests 'com.flirtinghell.analysis.adapter.out.ai.AnalysisQualityFixtureTest' --tests 'com.flirtinghell.analysis.adapter.out.ai.AnalysisQualityComparisonReportTest'",
+    "test:backend:analysis-quality:real": "cd apps/backend && RUN_LLM_QUALITY_COMPARISON=true ./gradlew test --tests 'com.flirtinghell.analysis.adapter.out.ai.ManualLlmQualityComparisonTest'",
     "test:mobile": "cd apps/mobile && flutter test",
     "typecheck": "npm run typecheck --workspaces --if-present"
   },
