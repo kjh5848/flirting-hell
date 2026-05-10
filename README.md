@@ -146,6 +146,12 @@ export FLIRTING_HELL_CLAUDE_BASE_URL="https://api.anthropic.com"
 
 AI 분석 계약은 `docs/product/ai-analysis-contract.md`를 따른다.
 
+LLM 품질 fixture만 빠르게 확인하려면 다음 명령을 쓴다. 이 테스트는 실제 외부 LLM API를 호출하지 않는다.
+
+```bash
+npm run test:backend:analysis-quality
+```
+
 ## 앱 전용 개발 기준
 
 - 앱: Flutter

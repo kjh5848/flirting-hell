@@ -23,6 +23,7 @@
     "build:backend": "cd apps/backend && ./gradlew build",
     "analyze:mobile": "cd apps/mobile && flutter analyze",
     "test:backend": "cd apps/backend && ./gradlew test",
+    "test:backend:analysis-quality": "cd apps/backend && ./gradlew test --tests 'com.flirtinghell.analysis.adapter.out.ai.AnalysisQualityFixtureTest'",
     "test:mobile": "cd apps/mobile && flutter test",
     "typecheck": "npm run typecheck --workspaces --if-present"
   },
