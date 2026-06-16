@@ -89,6 +89,7 @@ public class AnalysisService {
 				draft.alternativeReplies(),
 				draft.replyReason(),
 				draft.nextAction(),
+				draft.partnerType(),
 				now
 		);
 	}
@@ -111,6 +112,7 @@ public class AnalysisService {
 			List<String> alternativeReplies,
 			String replyReason,
 			String nextAction,
+			String partnerType,
 			Instant createdAt
 	) {
 		public static AnalysisTurnResult from(AnalysisTurn turn) {
@@ -126,6 +128,7 @@ public class AnalysisService {
 					turn.alternativeReplies(),
 					turn.replyReason(),
 					turn.nextAction(),
+					turn.partnerType(),
 					turn.createdAt()
 			);
 		}

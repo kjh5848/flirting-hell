@@ -61,6 +61,9 @@ class JpaAnalysisTurnEntity {
 	@Column(name = "next_action", nullable = false)
 	private String nextAction;
 
+	@Column(name = "partner_type")
+	private String partnerType;
+
 	@Column(name = "created_at", nullable = false)
 	private Instant createdAt;
 
@@ -81,6 +84,7 @@ class JpaAnalysisTurnEntity {
 			String alternativeReplies,
 			String replyReason,
 			String nextAction,
+			String partnerType,
 			Instant createdAt
 	) {
 		this.id = id;
@@ -96,6 +100,7 @@ class JpaAnalysisTurnEntity {
 		this.alternativeReplies = alternativeReplies;
 		this.replyReason = replyReason;
 		this.nextAction = nextAction;
+		this.partnerType = partnerType;
 		this.createdAt = createdAt;
 	}
 
@@ -114,6 +119,7 @@ class JpaAnalysisTurnEntity {
 				join(turn.alternativeReplies()),
 				turn.replyReason(),
 				turn.nextAction(),
+				turn.partnerType(),
 				turn.createdAt()
 		);
 	}
@@ -133,6 +139,7 @@ class JpaAnalysisTurnEntity {
 				split(alternativeReplies),
 				replyReason,
 				nextAction,
+				partnerType,
 				createdAt
 		);
 	}

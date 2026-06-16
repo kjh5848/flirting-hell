@@ -85,6 +85,7 @@ class AnalysisTurn {
     required this.replyReason,
     required this.nextAction,
     required this.createdAt,
+    this.partnerType,
   });
 
   factory AnalysisTurn.fromJson(Map<String, dynamic> json) {
@@ -101,6 +102,7 @@ class AnalysisTurn {
       replyReason: json['replyReason'] as String,
       nextAction: json['nextAction'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      partnerType: json['partnerType'] as String?,
     );
   }
 
@@ -116,6 +118,9 @@ class AnalysisTurn {
   final String replyReason;
   final String nextAction;
   final DateTime createdAt;
+
+  /// 상대 5축 성향 추론(JSON 문자열, nullable). UI가 PartnerType으로 파싱한다.
+  final String? partnerType;
 }
 
 class Room {

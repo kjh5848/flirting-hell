@@ -7,6 +7,7 @@ import '../../../core/widgets/section_card.dart';
 import '../../../data/models/room_models.dart';
 import '../../../data/remote/rooms_api.dart';
 import '../../home/application/bootstrap_provider.dart';
+import '../../personality/domain/personality_models.dart';
 import '../application/rooms_provider.dart';
 
 class RoomDetailScreen extends ConsumerStatefulWidget {
@@ -36,6 +37,11 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final detailAsync = ref.watch(roomDetailProvider(widget.roomId));
+    final idealRaw =
+        ref.watch(bootstrapProvider).valueOrNull?.user.profile.personalityIdeal;
+    final idealAxes = (idealRaw == null || idealRaw.trim().isEmpty)
+        ? null
+        : PersonalityProfile.fromStored(ideal: idealRaw).ideal;
 
     return detailAsync.when(
       data: (detail) => ScreenFrame(
@@ -60,7 +66,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
             const _EmptyHistoryCard()
           else
             for (final turn in detail.recentTurns) ...[
-              _AnalysisTurnCard(turn: turn),
+              _AnalysisTurnCard(turn: turn, idealAxes: idealAxes),
               const SizedBox(height: 12),
             ],
         ],
@@ -260,12 +266,18 @@ class _EmptyHistoryCard extends StatelessWidget {
 class _AnalysisTurnCard extends StatelessWidget {
   const _AnalysisTurnCard({
     required this.turn,
+    this.idealAxes,
   });
 
   final AnalysisTurn turn;
 
+  /// 내 이상형 5축. 설정돼 있으면 상대 유형과의 적합도를 계산한다.
+  final Map<String, int>? idealAxes;
+
   @override
   Widget build(BuildContext context) {
+    final partnerType = PartnerType.fromStored(turn.partnerType);
+
     return SectionCard(
       radius: 26,
       child: Column(
@@ -286,6 +298,10 @@ class _AnalysisTurnCard extends StatelessWidget {
           Text(turn.summary, style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 12),
           _InsightGrid(turn: turn),
+          if (partnerType != null) ...[
+            const SizedBox(height: 12),
+            _PartnerTypeCard(partnerType: partnerType, idealAxes: idealAxes),
+          ],
           const SizedBox(height: 14),
           _PrimaryReplyCard(reply: turn.primaryReply),
           if (turn.alternativeReplies.isNotEmpty) ...[
@@ -320,6 +336,85 @@ class _AnalysisTurnCard extends StatelessWidget {
       ),
     );
   }
+}
+
+class _PartnerTypeCard extends StatelessWidget {
+  const _PartnerTypeCard({
+    required this.partnerType,
+    this.idealAxes,
+  });
+
+  final PartnerType partnerType;
+  final Map<String, int>? idealAxes;
+
+  @override
+  Widget build(BuildContext context) {
+    final ideal = idealAxes;
+    final compatibility = ideal == null
+        ? null
+        : computeCompatibility(ideal: ideal, partner: partnerType.axes);
+
+    return SectionCard(
+      padding: const EdgeInsets.all(16),
+      radius: 18,
+      backgroundColor: const Color(0xFFFFF8F4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const AppStatusChip(
+                label: '상대 유형',
+                tone: AppStatusChipTone.neutral,
+              ),
+              const Spacer(),
+              if (compatibility != null)
+                Text(
+                  '${compatibility.score}%',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          if (compatibility != null) ...[
+            Text(
+              _matchLabel(compatibility.score),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '이상형과 ${_gapPhrase(compatibility.biggestGap)}. 잘 맞는 축은 ${compatibility.bestMatch.axis.label}.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ] else
+            Text(
+              '내 정보 > 연애 성향에서 이상형을 설정하면 이 상대와의 적합도까지 보여드려요.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          if (partnerType.summary != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              partnerType.summary!,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// 적합도 점수를 정성 라벨로(숫자 단정 대신 부드러운 표현 — 안전 규칙).
+String _matchLabel(int score) {
+  if (score >= 75) return '잘 맞는 편이에요';
+  if (score >= 50) return '어느 정도 맞아요';
+  if (score >= 25) return '차이가 있는 편이에요';
+  return '차이가 큰 편이에요';
+}
+
+String _gapPhrase(AxisGap gap) {
+  if (gap.gap <= 1) return '대부분 잘 맞아요';
+  return '${gap.axis.label}에서 차이가 보여요';
 }
 
 class _InsightGrid extends StatelessWidget {

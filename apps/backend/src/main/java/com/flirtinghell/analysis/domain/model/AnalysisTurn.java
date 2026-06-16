@@ -19,6 +19,8 @@ public record AnalysisTurn(
 		List<String> alternativeReplies,
 		String replyReason,
 		String nextAction,
+		// 상대 5축 성향 추론(JSON 문자열, nullable). 과거 분석에는 없을 수 있다.
+		String partnerType,
 		Instant createdAt
 ) {
 	public AnalysisTurn {

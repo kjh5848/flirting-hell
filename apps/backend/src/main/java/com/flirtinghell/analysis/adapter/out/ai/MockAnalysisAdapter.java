@@ -32,7 +32,26 @@ class MockAnalysisAdapter implements AnalysisPort {
 				primaryReply(strategyId, request.rawInput()),
 				alternativeReplies(strategyId),
 				"상대가 편한 상태를 말했으니, 확인 질문보다 일상 질문으로 대화를 자연스럽게 이어가는 편이 안전합니다.",
-				"상대가 답하면 음식, 산책, 영화처럼 가벼운 선택지로 약속 가능성을 봅니다."
+				"상대가 답하면 음식, 산책, 영화처럼 가벼운 선택지로 약속 가능성을 봅니다.",
+				partnerType(request.rawInput(), strategyId)
+		);
+	}
+
+	/// 상대 5축 성향을 입력에서 결정적으로 추정한 JSON 문자열을 만든다(mock).
+	/// 실제 LLM 연동 시 같은 형태의 JSON을 모델이 채운다.
+	private String partnerType(String rawInput, StrategyId strategyId) {
+		int expression = rawInput.contains("ㅋㅋ") || rawInput.contains("!") ? 4 : 3;
+		int pace = rawInput.contains("빨리") || rawInput.contains("자주") ? 4 : 2;
+		int contact = rawInput.contains("나:") && rawInput.contains("상대:") ? 4 : 3;
+		int emotion = rawInput.contains("좋아") || rawInput.contains("설레") ? 4 : 3;
+		int values = strategyId == StrategyId.MARRIAGE_VALUES ? 4 : 3;
+		String summary = rawInput.contains("집") || rawInput.contains("쉬")
+				? "편안하게 일상을 공유하는 반응이라 천천히 다가가기 좋은 유형으로 보여요."
+				: "반응이 가벼우면서 열려 있어 부담 없이 대화를 이어가기 좋은 유형으로 보여요.";
+		return String.format(
+				Locale.ROOT,
+				"{\"expression\":%d,\"pace\":%d,\"contact\":%d,\"emotion\":%d,\"values\":%d,\"summary\":\"%s\"}",
+				expression, pace, contact, emotion, values, summary
 		);
 	}
 

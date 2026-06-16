@@ -43,6 +43,32 @@ class PersonalityProfile {
   }
 }
 
+/// 분석이 추론한 상대 5축 성향 + 근거 요약.
+class PartnerType {
+  const PartnerType({required this.axes, this.summary});
+
+  final Map<String, int> axes;
+  final String? summary;
+
+  /// 백엔드가 보낸 JSON 문자열에서 복원한다. 없거나 손상 시 null.
+  static PartnerType? fromStored(String? raw) {
+    if (raw == null || raw.trim().isEmpty) {
+      return null;
+    }
+    final axes = _decodeAxes(raw);
+    String? summary;
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is Map && decoded['summary'] is String) {
+        summary = decoded['summary'] as String;
+      }
+    } catch (_) {
+      return null;
+    }
+    return PartnerType(axes: axes, summary: summary);
+  }
+}
+
 /// 한 축에서 이상형과 상대의 차이.
 class AxisGap {
   const AxisGap({

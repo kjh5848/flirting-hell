@@ -30,7 +30,10 @@ public interface AnalysisPort {
 			String primaryReply,
 			List<String> alternativeReplies,
 			String replyReason,
-			String nextAction
+			String nextAction,
+			// 상대 5축 성향 추론 결과(JSON 문자열, nullable). 백엔드는 의미를
+			// 해석하지 않고 클라이언트가 5축으로 파싱한다.
+			String partnerType
 	) {
 		public AnalysisDraft {
 			warnings = List.copyOf(warnings);

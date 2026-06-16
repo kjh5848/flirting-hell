@@ -86,7 +86,9 @@ class LlmAnalysisAdapter implements AnalysisPort {
 					response.primaryReply(),
 					response.alternativeReplies(),
 					response.replyReason(),
-					response.nextAction()
+					response.nextAction(),
+					// TODO: 실제 LLM 응답 스키마에 partnerType(5축)을 추가해 채운다. 지금은 미추론.
+					null
 			);
 		} catch (JsonProcessingException exception) {
 			throw new IllegalStateException("LLM analysis response did not match the expected schema.", exception);

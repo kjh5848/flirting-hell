@@ -34,7 +34,8 @@ class AnalysisQualityComparisonReportTest {
 				"오 넷플 좋지 ㅋㅋ 뭐 보고 있어?",
 				List.of("집에서 쉬는 날 좋지 ㅋㅋ", "오늘은 충전 모드네 ㅋㅋ"),
 				"상대가 말한 활동을 받아주면 부담이 적습니다.",
-				"상대가 콘텐츠 취향을 말하면 가벼운 추천 교환으로 이어갑니다."
+				"상대가 콘텐츠 취향을 말하면 가벼운 추천 교환으로 이어갑니다.",
+				"{\"expression\":4,\"pace\":2,\"contact\":4,\"emotion\":3,\"values\":3,\"summary\":\"편하게 반응하는 유형\"}"
 		);
 
 		AnalysisQualityComparisonReport.ReportFiles files = AnalysisQualityComparisonReport.write(
