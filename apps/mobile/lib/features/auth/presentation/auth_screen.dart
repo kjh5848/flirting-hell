@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/widgets/app_status_chip.dart';
 import '../../../core/widgets/screen_frame.dart';
 import '../../../core/widgets/section_card.dart';
 import '../application/auth_controller.dart';
@@ -13,22 +14,21 @@ class AuthScreen extends ConsumerWidget {
     final auth = ref.watch(authControllerProvider);
 
     return ScreenFrame(
-      title: '로그인',
-      subtitle:
-          'Firebase Auth로 사용자를 식별하고, 서버 bootstrap API로 내 설정과 상담방 상태를 불러옵니다.',
+      title: '시작하기',
+      subtitle: '먼저 익명으로 시작하고, 앱 흐름이 안정되면 Apple/Google/Kakao 로그인을 붙입니다.',
       children: [
         SectionCard(
+          radius: 26,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Firebase Auth',
-                  style: Theme.of(context).textTheme.labelSmall),
+              const AppStatusChip(label: '익명 시작'),
               const SizedBox(height: 10),
-              Text('익명 로그인으로 먼저 시작',
+              Text('개인정보 없이 먼저 써보기',
                   style: Theme.of(context).textTheme.headlineLarge),
               const SizedBox(height: 12),
               Text(
-                'Apple, Google, Kakao 로그인 전에는 Firebase 익명 로그인을 사용해 서버 인증 흐름을 검증합니다.',
+                'MVP에서는 Firebase 익명 인증으로 상담방과 분석 흐름을 먼저 검증합니다.',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               if (auth.errorMessage != null) ...[

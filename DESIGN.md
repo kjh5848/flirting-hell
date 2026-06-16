@@ -89,7 +89,7 @@ tokens:
 
 - **What this is:** 카톡, DM, 문자 대화를 붙여넣으면 지금 분위기와 말투를 읽고 보낼 답장을 추천하는 연애 커뮤니케이션 코치.
 - **Who it's for:** 연애를 처음 시작했거나, 상대 반응을 해석하고 답장을 고르는 데 긴장하는 사용자.
-- **Project type:** 모바일 우선 React/Vite 웹앱. Cloudflare Pages, Workers, D1로 운영한다.
+- **Project type:** Flutter 모바일 앱. 백엔드는 Spring Boot를 기본 서버로 두고, Firebase Auth로 사용자를 식별한다.
 - **Product boundary:** 상대를 조종하거나 압박하는 도구가 아니라, 부담을 줄이고 존중 있는 표현을 돕는 답장 코치다.
 
 ## Aesthetic Direction
@@ -99,6 +99,7 @@ tokens:
 - **Mood:** 카카오톡과 DM을 다루는 실사용 앱처럼 즉시 이해되어야 한다. 동시에 “연애 고민을 봐주는 개인 코치”의 따뜻함은 유지한다.
 - **Design references:** Google Stitch/design.md 방식처럼 루트 `DESIGN.md`를 디자인 토큰과 의사결정의 단일 기준으로 둔다.
 - **V2 references:** `docs/design/app-redesign-v2/`에 생성 시안, 외부 레퍼런스 링크, 토큰, 와이어프레임을 보관한다.
+- **Pillyze-inspired app density:** `docs/design/pillyze-inspired/`는 Pillyze 원본 이미지를 저장하지 않고, 앱 밀도·카드 그룹·리스트·하단 CTA 구조만 플러팅지옥 색상으로 재해석한다.
 
 ## Typography
 
@@ -127,7 +128,7 @@ tokens:
 
 ## Layout
 
-- **Approach:** Mobile app frame. 웹이지만 모바일 앱처럼 중앙 프레임 안에서 `대화 입력 → 분위기 확인 → 답장 선택`이 전환된다.
+- **Approach:** Mobile app frame. 앱 안에서 `상담방 선택 → 대화/상황 붙여넣기 → 요약/분류 → 답장 추천 → 상담방별 저장` 흐름이 분리된다.
 - **Grid:** 모바일 1열. 데스크톱에서도 중앙 앱 프레임을 유지한다.
 - **Max content width:** 480px.
 - **Radius:** 입력 26px, 주요 카드 32px, 보조 카드 28px, 칩은 pill.
@@ -136,13 +137,15 @@ tokens:
 
 ## Components
 
-- **App Shell:** 마케팅 랜딩이 아니라 분석 앱 화면으로 시작한다. 히어로 문구보다 입력 영역이 먼저 눈에 들어와야 한다.
-- **Progress Pill:** `1 대화 입력 / 2 분위기 확인 / 3 답장 선택`을 상단에 고정해 현재 위치를 명확히 보여준다.
-- **Message Input:** 대화 붙여넣기는 큰 텍스트 영역과 개인정보 경고를 함께 둔다.
-- **Preference Chips:** 칩은 작고 명확하게. 한 줄 설명을 과하게 늘리지 않는다.
-- **Reply Card Deck:** `순한맛`, `설렘맛`, `직진맛`은 카드 덱으로 보이고, 복사 버튼은 각 카드의 가장 강한 액션이다.
+- **App Shell:** 홈/상담방/저장/내 정보의 4개 하단 탭을 둔다. 분석권은 탭이 아니라 홈 상단 잔여량 칩과 내 정보 화면에서 진입한다. 홈에는 전략·결과를 밀어넣지 않는다.
+- **Room List:** 상담방 목록은 상대별 compact list tile로 보인다. 각 row는 별칭, 최근 요약, 관계 상태만 보여준다.
+- **Room Detail:** 상담방 상세는 입력 카드와 이전 분석 히스토리를 같은 맥락에 두되, 원문 전문 저장처럼 보이지 않게 한다.
+- **Message Input:** 대화 붙여넣기는 큰 텍스트 영역과 개인정보 경고를 함께 둔다. 전략은 보조 선택지로만 둔다.
+- **Insight Card:** 입력 후에는 형식 감지, 나/상대/상황 분류, 현재 상태, 주의 신호를 먼저 보여준다.
+- **Reply Card Deck:** 1순위 답장이 가장 큰 dark ink 카드로 보이고, 다른 톤/이유/피해야 할 말은 보조 카드로 둔다.
 - **Style Fit:** 이상형/연애스타일 분석은 판정이 아니라 경고등으로 표현한다.
 - **Safety Warning:** 조작, 압박, 성적 압박, 집착 신호는 rose/warning 톤으로 분명히 분리한다.
+- **Compact App Components:** 앱 헤더, 카드 그룹, 리스트 타일, 상태 칩, 하단 CTA는 `docs/design/pillyze-inspired/tokens.md` 기준으로 Flutter 컴포넌트화한다.
 
 ## Motion
 
@@ -174,3 +177,7 @@ tokens:
 | 2026-04-25 | AI-console metaphor removed | 사용자가 AI 도구를 조작하는 느낌보다 연애 대화를 정리하고 답장을 고르는 생활형 웹앱 UX가 더 적합하다. |
 | 2026-04-25 | A direction selected for redesign v2 | Things 3의 정돈형 앱 구조와 Tinder의 따뜻한 포인트를 결합한 A안을 최종 UI 기준으로 삼는다. |
 | 2026-04-26 | Skeleton-first design gate added | 색을 입히기 전에 정보 구조, 단계 전환, CTA 위치, 모바일 폭 대응을 먼저 검증한다. |
+| 2026-05-10 | Pillyze-inspired page mockups added | 원본 이미지는 저장하지 않고 앱 밀도, 카드 그룹, 리스트, 하단 CTA 구조만 플러팅지옥 색상으로 재해석한다. |
+| 2026-05-13 | Flutter app UI direction applied | 웹 대시보드 구조를 줄이고 Flutter 앱의 홈/상담방/저장/내 정보/분석권 탭 흐름으로 화면 밀도를 맞춘다. |
+| 2026-06-16 | Bottom nav reduced to 4 tabs | 목업 하단바와 통일. 분석권 탭을 제거하고 홈 상단 잔여량 칩과 내 정보 화면에서 진입하게 해 결제 노출을 낮춘다. |
+| 2026-06-16 | Splash aligned to mockup 00 | 중앙 정렬 타이틀, rose accent 원형 심볼, 하단 풀폭 CTA로 목업 00과 일치시킨다. |

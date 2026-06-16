@@ -79,6 +79,17 @@ public class UserBootstrapService {
 				now
 		);
 		UserProfile saved = userProfileRepository.save(updated);
+		appUserRepository.findByFirebaseUid(firebaseUid)
+				.filter(user -> !user.onboardingCompleted())
+				.ifPresent(user -> appUserRepository.save(new AppUser(
+						user.id(),
+						user.firebaseUid(),
+						user.status(),
+						true,
+						user.createdAt(),
+						now,
+						now
+				)));
 
 		return new ProfileResult(
 				saved.nickname(),

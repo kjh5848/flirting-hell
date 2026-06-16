@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const _background = Color(0xFFFFFBFA);
+  static const _background = Color(0xFFFBF3F0);
   static const _surface = Color(0xFFFFFFFF);
+  static const _surfaceSoft = Color(0xFFFFF8F4);
   static const _textPrimary = Color(0xFF1D1719);
   static const _textSecondary = Color(0xFF76666A);
   static const _accent = Color(0xFFE43F5A);
@@ -38,11 +39,11 @@ class AppTheme {
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         type: BottomNavigationBarType.fixed,
         backgroundColor: _surface,
-        selectedItemColor: _textPrimary,
+        selectedItemColor: _accent,
         unselectedItemColor: _textSecondary,
         selectedLabelStyle: TextStyle(
           fontSize: 11,
-          fontWeight: FontWeight.w800,
+          fontWeight: FontWeight.w900,
         ),
         unselectedLabelStyle: TextStyle(
           fontSize: 11,
@@ -58,13 +59,54 @@ class AppTheme {
           side: const BorderSide(color: _border),
         ),
       ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: _surfaceSoft,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: _border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: _border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: _accent, width: 1.4),
+        ),
+        labelStyle: const TextStyle(
+          color: _textSecondary,
+          fontSize: 13,
+          fontWeight: FontWeight.w800,
+        ),
+        helperStyle: const TextStyle(
+          color: _textSecondary,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          height: 1.35,
+        ),
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: const Color(0xFFFFF1F2),
+        selectedColor: _accent,
+        disabledColor: _surfaceSoft,
+        side: BorderSide.none,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(999),
+        ),
+        labelStyle: const TextStyle(
+          color: _accent,
+          fontSize: 12,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: _textPrimary,
           foregroundColor: Colors.white,
-          minimumSize: const Size.fromHeight(52),
+          minimumSize: const Size.fromHeight(56),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(20),
           ),
           textStyle: const TextStyle(
             fontSize: 15,

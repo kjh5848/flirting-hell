@@ -63,5 +63,10 @@ class MeControllerTest {
 				.andExpect(jsonPath("$.data.profile.nickname").value("주혁"))
 				.andExpect(jsonPath("$.data.profile.guidanceLevel").value("REALITY_CHECK"))
 				.andExpect(jsonPath("$.data.profile.avoidAdvice").value("단정하지 않기"));
+
+		mockMvc.perform(get("/api/me/bootstrap")
+						.header("Authorization", "Bearer dev:firebase-profile-user"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data.user.onboardingCompleted").value(true));
 	}
 }

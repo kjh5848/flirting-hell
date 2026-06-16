@@ -7,6 +7,7 @@ import '../features/auth/presentation/auth_screen.dart';
 import '../features/auth/presentation/splash_screen.dart';
 import '../features/billing/presentation/billing_screen.dart';
 import '../features/home/presentation/home_screen.dart';
+import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/rooms/presentation/room_detail_screen.dart';
 import '../features/rooms/presentation/rooms_screen.dart';
@@ -28,7 +29,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       }
 
       if (isSignedIn && isPublicPath) {
-        return '/home';
+        return '/onboarding';
       }
 
       return null;
@@ -41,6 +42,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/auth',
         builder: (context, state) => const AuthScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        builder: (context, state) => const OnboardingScreen(),
       ),
       ShellRoute(
         builder: (context, state, child) {

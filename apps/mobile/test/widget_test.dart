@@ -15,7 +15,7 @@ void main() {
             return const BootstrapSnapshot(
               user: BootstrapUser(
                 userId: 'usr_test',
-                onboardingCompleted: false,
+                onboardingCompleted: true,
                 profile: BootstrapProfile(
                   nickname: '테스터',
                   speechStyle: '짧고 자연스럽게',
@@ -39,17 +39,18 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('플러팅지옥'), findsOneWidget);
+    // Splash gates the app shell behind sign in.
     expect(find.text('플러팅지옥 시작'), findsOneWidget);
 
     await tester.tap(find.text('플러팅지옥 시작'));
     await tester.pumpAndSettle();
-    expect(find.text('Firebase Auth'), findsOneWidget);
+    expect(find.widgetWithText(OutlinedButton, '로컬 개발용 로그인'), findsOneWidget);
 
     await tester.tap(find.widgetWithText(OutlinedButton, '로컬 개발용 로그인'));
     await tester.pumpAndSettle();
 
-    expect(find.text('오늘 이어갈 상담방'), findsOneWidget);
-    expect(find.text('상담방 보기'), findsOneWidget);
+    // Signed in with onboarding completed lands on the home tab.
+    expect(find.text('플러팅지옥'), findsOneWidget);
+    expect(find.text('3회 남음'), findsOneWidget);
   });
 }

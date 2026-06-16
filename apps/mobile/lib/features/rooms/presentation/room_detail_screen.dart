@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/widgets/app_status_chip.dart';
 import '../../../core/widgets/screen_frame.dart';
 import '../../../core/widgets/section_card.dart';
 import '../../../data/models/room_models.dart';
@@ -40,6 +41,10 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
       data: (detail) => ScreenFrame(
         title: detail.room.alias,
         subtitle: '대화 전문은 길게 저장하지 않고, 요약과 추천 답장만 이 상담방에 남깁니다.',
+        trailing: AppStatusChip(
+          label: _relationshipStageLabel(detail.room.relationshipStage),
+          tone: AppStatusChipTone.neutral,
+        ),
         children: [
           _RoomProfileCard(room: detail.room),
           const SizedBox(height: 12),
@@ -119,20 +124,26 @@ class _RoomProfileCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SectionCard(
+      radius: 24,
+      backgroundColor: const Color(0xFFFFF8F4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
             children: [
-              Expanded(
-                child: Text(
-                  room.currentConcern ?? '아직 입력된 고민이 없어요',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
+              AppStatusChip(label: _strategyLabel(room.preferredStrategyId)),
+              const AppStatusChip(
+                label: '원문 미저장',
+                tone: AppStatusChipTone.neutral,
               ),
-              const SizedBox(width: 12),
-              Chip(label: Text(_relationshipStageLabel(room.relationshipStage))),
             ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            room.currentConcern ?? '아직 입력된 고민이 없어요',
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           if (room.cautionNotes != null) ...[
             const SizedBox(height: 10),
@@ -165,9 +176,12 @@ class _AnalysisInputCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SectionCard(
+      radius: 26,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const AppStatusChip(label: '분석 입력'),
+          const SizedBox(height: 10),
           Text('대화나 상황 붙여넣기', style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 8),
           Text(
@@ -187,23 +201,22 @@ class _AnalysisInputCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          DropdownButtonFormField<String>(
-            value: strategyId,
-            decoration: const InputDecoration(labelText: '이번에 필요한 전략'),
-            items: const [
-              DropdownMenuItem(value: 'DEVELOP_ROMANCE', child: Text('연애로 발전')),
-              DropdownMenuItem(value: 'CHECK_RELATIONSHIP_STATUS', child: Text('여친/남친 여부 확인')),
-              DropdownMenuItem(value: 'MAKE_PLAN', child: Text('약속 잡기')),
-              DropdownMenuItem(value: 'MARRIAGE_VALUES', child: Text('결혼 가치관')),
-              DropdownMenuItem(value: 'SLOW_DOWN', child: Text('속도 조절')),
+          Text('원하면 이번 목적을 먼저 고를 수 있어요',
+              style: Theme.of(context).textTheme.labelSmall),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final strategy in _strategyOptions)
+                ChoiceChip(
+                  label: Text(strategy.label),
+                  selected: strategy.id == strategyId,
+                  onSelected: isSubmitting
+                      ? null
+                      : (_) => onStrategyChanged(strategy.id),
+                ),
             ],
-            onChanged: isSubmitting
-                ? null
-                : (value) {
-                    if (value != null) {
-                      onStrategyChanged(value);
-                    }
-                  },
           ),
           const SizedBox(height: 12),
           Text(
@@ -235,6 +248,7 @@ class _EmptyHistoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SectionCard(
+      backgroundColor: const Color(0xFFFFF8F4),
       child: Text(
         '아직 저장된 분석이 없어요. 위에 대화나 상황을 붙여넣으면 첫 답장 카드가 생깁니다.',
         style: Theme.of(context).textTheme.bodyMedium,
@@ -253,6 +267,7 @@ class _AnalysisTurnCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SectionCard(
+      radius: 26,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -260,34 +275,133 @@ class _AnalysisTurnCard extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
-              Chip(label: Text(_sourceTypeLabel(turn.sourceType))),
-              Chip(label: Text(_strategyLabel(turn.recommendedStrategyId))),
+              AppStatusChip(label: _sourceTypeLabel(turn.sourceType)),
+              AppStatusChip(
+                label: _strategyLabel(turn.recommendedStrategyId),
+                tone: AppStatusChipTone.warning,
+              ),
             ],
           ),
           const SizedBox(height: 12),
-          Text(turn.summary, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          Text(turn.currentState, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 16),
-          Text('추천 답장', style: Theme.of(context).textTheme.labelSmall),
-          const SizedBox(height: 8),
-          Text(turn.primaryReply, style: Theme.of(context).textTheme.titleLarge),
+          Text(turn.summary, style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 12),
+          _InsightGrid(turn: turn),
           const SizedBox(height: 14),
-          Text('왜 이 답장인가', style: Theme.of(context).textTheme.labelSmall),
-          const SizedBox(height: 6),
-          Text(turn.replyReason, style: Theme.of(context).textTheme.bodyMedium),
+          _PrimaryReplyCard(reply: turn.primaryReply),
+          if (turn.alternativeReplies.isNotEmpty) ...[
+            const SizedBox(height: 14),
+            Text('다른 톤', style: Theme.of(context).textTheme.labelSmall),
+            const SizedBox(height: 8),
+            for (final reply in turn.alternativeReplies.take(2)) ...[
+              SectionCard(
+                padding: const EdgeInsets.all(14),
+                radius: 18,
+                backgroundColor: const Color(0xFFFFF8F4),
+                child:
+                    Text(reply, style: Theme.of(context).textTheme.bodyMedium),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ],
           const SizedBox(height: 14),
-          Text('피해야 할 말', style: Theme.of(context).textTheme.labelSmall),
-          const SizedBox(height: 6),
-          for (final warning in turn.warnings)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Text('• $warning', style: Theme.of(context).textTheme.bodyMedium),
+          _MiniInfoCard(
+            label: '왜 이 답장인가',
+            body: turn.replyReason,
+          ),
+          const SizedBox(height: 10),
+          if (turn.warnings.isNotEmpty)
+            _MiniInfoCard(
+              label: '피해야 할 말',
+              body: turn.warnings.map((warning) => '• $warning').join('\n'),
             ),
           const SizedBox(height: 10),
-          Text('다음 행동', style: Theme.of(context).textTheme.labelSmall),
-          const SizedBox(height: 6),
-          Text(turn.nextAction, style: Theme.of(context).textTheme.bodyMedium),
+          _MiniInfoCard(label: '다음 행동', body: turn.nextAction),
+        ],
+      ),
+    );
+  }
+}
+
+class _InsightGrid extends StatelessWidget {
+  const _InsightGrid({required this.turn});
+
+  final AnalysisTurn turn;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _MiniInfoCard(
+            label: '현재 상태',
+            body: turn.currentState,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _MiniInfoCard(
+            label: '분류',
+            body: turn.participantSummary,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PrimaryReplyCard extends StatelessWidget {
+  const _PrimaryReplyCard({required this.reply});
+
+  final String reply;
+
+  @override
+  Widget build(BuildContext context) {
+    return SectionCard(
+      backgroundColor: const Color(0xFF1D1719),
+      borderColor: const Color(0xFF1D1719),
+      radius: 22,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const AppStatusChip(label: '1순위 답장'),
+          const SizedBox(height: 12),
+          Text(
+            reply,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 21,
+              fontWeight: FontWeight.w900,
+              height: 1.25,
+              letterSpacing: -0.6,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MiniInfoCard extends StatelessWidget {
+  const _MiniInfoCard({
+    required this.label,
+    required this.body,
+  });
+
+  final String label;
+  final String body;
+
+  @override
+  Widget build(BuildContext context) {
+    return SectionCard(
+      padding: const EdgeInsets.all(14),
+      radius: 18,
+      backgroundColor: const Color(0xFFFFF8F4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: Theme.of(context).textTheme.labelSmall),
+          const SizedBox(height: 8),
+          Text(body, style: Theme.of(context).textTheme.bodyMedium),
         ],
       ),
     );
@@ -317,7 +431,7 @@ String _sourceTypeLabel(String value) {
   };
 }
 
-String _strategyLabel(String value) {
+String _strategyLabel(String? value) {
   return switch (value) {
     'DEVELOP_ROMANCE' => '연애로 발전',
     'CHECK_RELATIONSHIP_STATUS' => '여친/남친 여부 확인',
@@ -326,4 +440,19 @@ String _strategyLabel(String value) {
     'SLOW_DOWN' => '속도 조절',
     _ => '전략 미정',
   };
+}
+
+const _strategyOptions = [
+  _StrategyOption('DEVELOP_ROMANCE', '연애로 발전'),
+  _StrategyOption('CHECK_RELATIONSHIP_STATUS', '여친/남친 확인'),
+  _StrategyOption('MAKE_PLAN', '약속 잡기'),
+  _StrategyOption('MARRIAGE_VALUES', '결혼 가치관'),
+  _StrategyOption('SLOW_DOWN', '속도 조절'),
+];
+
+class _StrategyOption {
+  const _StrategyOption(this.id, this.label);
+
+  final String id;
+  final String label;
 }
