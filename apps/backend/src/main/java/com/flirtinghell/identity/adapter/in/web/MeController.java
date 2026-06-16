@@ -53,7 +53,9 @@ public class MeController {
 			@Size(max = 120) String datingStyle,
 			@NotNull GuidanceLevel guidanceLevel,
 			@Size(max = 160) String preferredPartnerStyle,
-			@Size(max = 160) String avoidAdvice
+			@Size(max = 160) String avoidAdvice,
+			@Size(max = 2000) String personalitySelf,
+			@Size(max = 2000) String personalityIdeal
 	) {
 		UserBootstrapService.UpdateProfileCommand toCommand() {
 			return new UserBootstrapService.UpdateProfileCommand(
@@ -62,7 +64,9 @@ public class MeController {
 					datingStyle,
 					guidanceLevel,
 					preferredPartnerStyle,
-					avoidAdvice
+					avoidAdvice,
+					personalitySelf,
+					personalityIdeal
 			);
 		}
 	}

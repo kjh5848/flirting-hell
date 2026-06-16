@@ -58,6 +58,36 @@ void main() {
     });
   });
 
+  group('PersonalityProfile storage', () {
+    test('fromStored falls back to neutral on null/empty/garbage', () {
+      for (final raw in [null, '', '   ', 'not json', '{']) {
+        final p = PersonalityProfile.fromStored(self: raw, ideal: raw);
+        expect(p.self.length, personalityAxes.length);
+        expect(p.self.values.every((v) => v == 3), isTrue);
+      }
+    });
+
+    test('JSON round-trips and clamps out-of-range values', () {
+      final original = PersonalityProfile(
+        self: {for (final a in personalityAxes) a.id: 5},
+        ideal: {for (final a in personalityAxes) a.id: 1},
+      );
+      final restored = PersonalityProfile.fromStored(
+        self: original.selfJson,
+        ideal: original.idealJson,
+      );
+      expect(restored.self, original.self);
+      expect(restored.ideal, original.ideal);
+
+      final clamped = PersonalityProfile.fromStored(
+        self: '{"expression": 99, "pace": -3}',
+        ideal: '{}',
+      );
+      expect(clamped.self['expression'], personalityScoreMax);
+      expect(clamped.self['pace'], personalityScoreMin);
+    });
+  });
+
   test('scores stay within 1..5 via clamping', () {
     final result = computeCompatibility(
       ideal: const {'expression': 99},

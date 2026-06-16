@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'personality_axes.dart';
 
 /// 전역 프로필에 추가될 성향 데이터. (이번 단계는 로컬 상태만, 백엔드 영속화 보류)
@@ -18,6 +20,17 @@ class PersonalityProfile {
     final base = {for (final axis in personalityAxes) axis.id: 3};
     return PersonalityProfile(self: {...base}, ideal: {...base});
   }
+
+  /// 서버에 저장된 JSON 문자열(없거나 손상 시 중앙값)에서 복원한다.
+  factory PersonalityProfile.fromStored({String? self, String? ideal}) {
+    return PersonalityProfile(
+      self: _decodeAxes(self),
+      ideal: _decodeAxes(ideal),
+    );
+  }
+
+  String get selfJson => jsonEncode(self);
+  String get idealJson => jsonEncode(ideal);
 
   PersonalityProfile copyWith({
     Map<String, int>? self,
@@ -97,6 +110,29 @@ Compatibility computeCompatibility({
       : (100 * (1 - totalGap / maxTotalGap)).round();
 
   return Compatibility(score: score, perAxis: gaps);
+}
+
+/// JSON 문자열을 축 점수 맵으로 디코드한다. 누락 축은 중앙값(3), 손상 시 전부 중앙값.
+Map<String, int> _decodeAxes(String? raw) {
+  final result = {for (final axis in personalityAxes) axis.id: _midScore};
+  if (raw == null || raw.trim().isEmpty) {
+    return result;
+  }
+  try {
+    final decoded = jsonDecode(raw);
+    if (decoded is Map) {
+      for (final entry in decoded.entries) {
+        final key = entry.key.toString();
+        final value = entry.value;
+        if (result.containsKey(key) && value is num) {
+          result[key] = _clampScore(value.round());
+        }
+      }
+    }
+  } catch (_) {
+    // 손상된 값은 무시하고 기본값 유지.
+  }
+  return result;
 }
 
 const int _midScore = 3;

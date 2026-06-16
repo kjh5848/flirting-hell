@@ -48,6 +48,8 @@ class BootstrapProfile {
     required this.guidanceLevel,
     required this.preferredPartnerStyle,
     required this.avoidAdvice,
+    this.personalitySelf,
+    this.personalityIdeal,
   });
 
   factory BootstrapProfile.fromJson(Map<String, dynamic> json) {
@@ -58,6 +60,8 @@ class BootstrapProfile {
       guidanceLevel: json['guidanceLevel'] as String,
       preferredPartnerStyle: json['preferredPartnerStyle'] as String?,
       avoidAdvice: json['avoidAdvice'] as String,
+      personalitySelf: json['personalitySelf'] as String?,
+      personalityIdeal: json['personalityIdeal'] as String?,
     );
   }
 
@@ -67,6 +71,10 @@ class BootstrapProfile {
   final String guidanceLevel;
   final String? preferredPartnerStyle;
   final String avoidAdvice;
+
+  /// 연애 성향 5축 JSON 문자열(서버는 해석 안 함). nullable.
+  final String? personalitySelf;
+  final String? personalityIdeal;
 }
 
 class BootstrapUsage {

@@ -37,6 +37,12 @@ class JpaUserProfileEntity {
 	@Column(name = "avoid_advice")
 	private String avoidAdvice;
 
+	@Column(name = "personality_self")
+	private String personalitySelf;
+
+	@Column(name = "personality_ideal")
+	private String personalityIdeal;
+
 	@Column(name = "created_at", nullable = false)
 	private Instant createdAt;
 
@@ -54,6 +60,8 @@ class JpaUserProfileEntity {
 			GuidanceLevel guidanceLevel,
 			String preferredPartnerStyle,
 			String avoidAdvice,
+			String personalitySelf,
+			String personalityIdeal,
 			Instant createdAt,
 			Instant updatedAt
 	) {
@@ -64,6 +72,8 @@ class JpaUserProfileEntity {
 		this.guidanceLevel = guidanceLevel;
 		this.preferredPartnerStyle = preferredPartnerStyle;
 		this.avoidAdvice = avoidAdvice;
+		this.personalitySelf = personalitySelf;
+		this.personalityIdeal = personalityIdeal;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
@@ -77,6 +87,8 @@ class JpaUserProfileEntity {
 				profile.guidanceLevel(),
 				profile.preferredPartnerStyle(),
 				profile.avoidAdvice(),
+				profile.personalitySelf(),
+				profile.personalityIdeal(),
 				profile.createdAt(),
 				profile.updatedAt()
 		);
@@ -91,6 +103,8 @@ class JpaUserProfileEntity {
 				guidanceLevel,
 				preferredPartnerStyle,
 				avoidAdvice,
+				personalitySelf,
+				personalityIdeal,
 				createdAt,
 				updatedAt
 		);

@@ -55,6 +55,8 @@ class UpdateProfilePayload {
     required this.guidanceLevel,
     required this.preferredPartnerStyle,
     required this.avoidAdvice,
+    this.personalitySelf,
+    this.personalityIdeal,
   });
 
   final String? nickname;
@@ -64,6 +66,10 @@ class UpdateProfilePayload {
   final String? preferredPartnerStyle;
   final String avoidAdvice;
 
+  /// 연애 성향 5축 JSON 문자열(서버는 해석 안 함). nullable.
+  final String? personalitySelf;
+  final String? personalityIdeal;
+
   Map<String, dynamic> toJson() {
     return {
       'nickname': nickname,
@@ -72,6 +78,8 @@ class UpdateProfilePayload {
       'guidanceLevel': guidanceLevel,
       'preferredPartnerStyle': preferredPartnerStyle,
       'avoidAdvice': avoidAdvice,
+      'personalitySelf': personalitySelf,
+      'personalityIdeal': personalityIdeal,
     };
   }
 }

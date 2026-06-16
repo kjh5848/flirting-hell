@@ -56,7 +56,9 @@ public class UserBootstrapService {
 								profile.datingStyle(),
 								profile.guidanceLevel(),
 								profile.preferredPartnerStyle(),
-								profile.avoidAdvice()
+								profile.avoidAdvice(),
+								profile.personalitySelf(),
+								profile.personalityIdeal()
 						)
 				),
 				createUsageResult(now),
@@ -76,6 +78,8 @@ public class UserBootstrapService {
 				command.guidanceLevel(),
 				command.preferredPartnerStyle(),
 				command.avoidAdvice(),
+				command.personalitySelf(),
+				command.personalityIdeal(),
 				now
 		);
 		UserProfile saved = userProfileRepository.save(updated);
@@ -97,7 +101,9 @@ public class UserBootstrapService {
 				saved.datingStyle(),
 				saved.guidanceLevel(),
 				saved.preferredPartnerStyle(),
-				saved.avoidAdvice()
+				saved.avoidAdvice(),
+				saved.personalitySelf(),
+				saved.personalityIdeal()
 		);
 	}
 
@@ -137,6 +143,8 @@ public class UserBootstrapService {
 				GuidanceLevel.BALANCED,
 				null,
 				"단정하거나 압박하는 조언은 피하기",
+				null,
+				null,
 				now,
 				now
 		);
@@ -191,7 +199,9 @@ public class UserBootstrapService {
 			String datingStyle,
 			GuidanceLevel guidanceLevel,
 			String preferredPartnerStyle,
-			String avoidAdvice
+			String avoidAdvice,
+			String personalitySelf,
+			String personalityIdeal
 	) {
 	}
 
@@ -227,7 +237,9 @@ public class UserBootstrapService {
 			String datingStyle,
 			GuidanceLevel guidanceLevel,
 			String preferredPartnerStyle,
-			String avoidAdvice
+			String avoidAdvice,
+			String personalitySelf,
+			String personalityIdeal
 	) {
 	}
 }

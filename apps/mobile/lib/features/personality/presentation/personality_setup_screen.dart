@@ -1,24 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/widgets/app_status_chip.dart';
 import '../../../core/widgets/screen_frame.dart';
 import '../../../core/widgets/section_card.dart';
+import '../../../data/remote/bootstrap_api.dart';
+import '../../home/application/bootstrap_provider.dart';
 import '../domain/personality_axes.dart';
 import '../domain/personality_models.dart';
 
 /// 내 성향 + 이상형을 설정하는 화면.
 ///
-/// 이번 단계는 **로컬 상태만** 유지한다. 백엔드 영속화와 대화 기반 상대 유형
-/// 추론은 사용자 확인 후 다음 단계에서 붙인다(스펙 §5 정지선).
-class PersonalitySetupScreen extends StatefulWidget {
+/// 저장된 성향을 bootstrap에서 불러오고, 저장 시 PATCH /me/profile로 영속한다.
+/// 대화 기반 상대 유형 추론(LLM)은 다음 단계다 — 미리보기는 예시 상대 기준이다.
+class PersonalitySetupScreen extends ConsumerStatefulWidget {
   const PersonalitySetupScreen({super.key});
 
   @override
-  State<PersonalitySetupScreen> createState() => _PersonalitySetupScreenState();
+  ConsumerState<PersonalitySetupScreen> createState() =>
+      _PersonalitySetupScreenState();
 }
 
-class _PersonalitySetupScreenState extends State<PersonalitySetupScreen> {
-  late PersonalityProfile _profile = PersonalityProfile.neutral();
+class _PersonalitySetupScreenState
+    extends ConsumerState<PersonalitySetupScreen> {
+  PersonalityProfile _profile = PersonalityProfile.neutral();
+  bool _seeded = false;
+  bool _isSaving = false;
 
   /// 궁합 미리보기에 쓰는 예시 상대(실데이터 아님 — 대화 추론은 다음 단계).
   static const _examplePartner = {
@@ -31,6 +38,15 @@ class _PersonalitySetupScreenState extends State<PersonalitySetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final profile = ref.watch(bootstrapProvider).valueOrNull?.user.profile;
+    if (!_seeded && profile != null) {
+      _seeded = true;
+      _profile = PersonalityProfile.fromStored(
+        self: profile.personalitySelf,
+        ideal: profile.personalityIdeal,
+      );
+    }
+
     final compatibility = computeCompatibility(
       ideal: _profile.ideal,
       partner: _examplePartner,
@@ -69,17 +85,52 @@ class _PersonalitySetupScreenState extends State<PersonalitySetupScreen> {
         _CompatibilityPreviewCard(compatibility: compatibility),
         const SizedBox(height: 18),
         FilledButton(
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('성향을 임시 저장했어요. 계정 저장 연동은 다음 단계예요.'),
-              ),
-            );
-          },
-          child: const Text('성향 저장'),
+          onPressed: (profile == null || _isSaving) ? null : _save,
+          child: Text(_isSaving ? '저장 중' : '성향 저장'),
         ),
       ],
     );
+  }
+
+  Future<void> _save() async {
+    final profile = ref.read(bootstrapProvider).valueOrNull?.user.profile;
+    if (profile == null) {
+      return;
+    }
+
+    setState(() => _isSaving = true);
+    try {
+      // PATCH는 전체 프로필을 보낸다. 기존 값으로 payload를 채우고 성향만 덮어써
+      // 다른 필드가 지워지지 않게 한다.
+      await ref.read(bootstrapApiProvider).updateProfile(
+            UpdateProfilePayload(
+              nickname: profile.nickname,
+              speechStyle: profile.speechStyle,
+              datingStyle: profile.datingStyle,
+              guidanceLevel: profile.guidanceLevel,
+              preferredPartnerStyle: profile.preferredPartnerStyle,
+              avoidAdvice: profile.avoidAdvice,
+              personalitySelf: _profile.selfJson,
+              personalityIdeal: _profile.idealJson,
+            ),
+          );
+      ref.invalidate(bootstrapProvider);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('연애 성향을 저장했어요.')),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('성향을 저장하지 못했습니다.')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
+    }
   }
 }
 
