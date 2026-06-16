@@ -221,7 +221,84 @@ class _CompatibilityPreviewCard extends StatelessWidget {
             axisLabel: gap.axis.label,
             tone: AppStatusChipTone.warning,
           ),
+          const SizedBox(height: 14),
+          for (final axisGap in compatibility.perAxis)
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: _AxisGapBar(axisGap: axisGap),
+            ),
         ],
+      ),
+    );
+  }
+}
+
+/// 한 축에서 이상형(rose 테두리)과 상대(채움) 위치를 5칸 트랙으로 보여준다.
+class _AxisGapBar extends StatelessWidget {
+  const _AxisGapBar({required this.axisGap});
+
+  final AxisGap axisGap;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = Theme.of(context).colorScheme.primary;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(axisGap.axis.label,
+                style: Theme.of(context).textTheme.bodyMedium),
+            const Spacer(),
+            Text(
+              axisGap.gap == 0 ? '딱 맞음' : '차이 ${axisGap.gap}',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            for (var score = personalityScoreMin;
+                score <= personalityScoreMax;
+                score++)
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: _TrackCell(
+                    isPartner: score == axisGap.partnerValue,
+                    isIdeal: score == axisGap.idealValue,
+                    accent: accent,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _TrackCell extends StatelessWidget {
+  const _TrackCell({
+    required this.isPartner,
+    required this.isIdeal,
+    required this.accent,
+  });
+
+  final bool isPartner;
+  final bool isIdeal;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 10,
+      decoration: BoxDecoration(
+        color: isPartner ? accent : const Color(0xFFF1E4E0),
+        borderRadius: BorderRadius.circular(999),
+        border: isIdeal ? Border.all(color: accent, width: 2) : null,
       ),
     );
   }
