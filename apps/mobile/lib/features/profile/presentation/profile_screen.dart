@@ -104,6 +104,13 @@ class ProfileScreen extends ConsumerWidget {
         ),
         const SizedBox(height: 18),
         CompactListTileCard(
+          leadingText: '향',
+          title: '연애 성향',
+          subtitle: '내 성향과 이상형을 설정해 상대와의 적합도를 봅니다',
+          onTap: () => context.go('/personality'),
+        ),
+        const SizedBox(height: 10),
+        CompactListTileCard(
           leadingText: '권',
           title: '분석권',
           subtitle: bootstrap == null

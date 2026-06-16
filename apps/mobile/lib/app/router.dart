@@ -8,6 +8,7 @@ import '../features/auth/presentation/splash_screen.dart';
 import '../features/billing/presentation/billing_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/onboarding/presentation/onboarding_screen.dart';
+import '../features/personality/presentation/personality_setup_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/rooms/presentation/room_detail_screen.dart';
 import '../features/rooms/presentation/rooms_screen.dart';
@@ -91,6 +92,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: '/billing',
             pageBuilder: (context, state) => const NoTransitionPage(
               child: BillingScreen(),
+            ),
+          ),
+          GoRoute(
+            path: '/personality',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: PersonalitySetupScreen(),
             ),
           ),
         ],
