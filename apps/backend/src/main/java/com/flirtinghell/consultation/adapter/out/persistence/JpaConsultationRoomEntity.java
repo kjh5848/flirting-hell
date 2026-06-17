@@ -45,6 +45,9 @@ class JpaConsultationRoomEntity {
 	@Column(name = "saved_reply_count", nullable = false)
 	private int savedReplyCount;
 
+	@Column(name = "relationship_state")
+	private String relationshipState;
+
 	@Column(name = "archived_at")
 	private Instant archivedAt;
 
@@ -66,6 +69,7 @@ class JpaConsultationRoomEntity {
 			String cautionNotes,
 			StrategyId preferredStrategyId,
 			String lastTurnSummary,
+			String relationshipState,
 			int savedReplyCount,
 			Instant archivedAt,
 			Instant createdAt,
@@ -79,6 +83,7 @@ class JpaConsultationRoomEntity {
 		this.cautionNotes = cautionNotes;
 		this.preferredStrategyId = preferredStrategyId;
 		this.lastTurnSummary = lastTurnSummary;
+		this.relationshipState = relationshipState;
 		this.savedReplyCount = savedReplyCount;
 		this.archivedAt = archivedAt;
 		this.createdAt = createdAt;
@@ -95,6 +100,7 @@ class JpaConsultationRoomEntity {
 				room.cautionNotes(),
 				room.preferredStrategyId(),
 				room.lastTurnSummary(),
+				room.relationshipState(),
 				room.savedReplyCount(),
 				room.archivedAt(),
 				room.createdAt(),
@@ -112,6 +118,7 @@ class JpaConsultationRoomEntity {
 				cautionNotes,
 				preferredStrategyId,
 				lastTurnSummary,
+				relationshipState,
 				savedReplyCount,
 				archivedAt,
 				createdAt,

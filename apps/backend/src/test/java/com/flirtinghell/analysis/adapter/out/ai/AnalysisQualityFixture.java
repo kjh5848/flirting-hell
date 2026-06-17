@@ -32,6 +32,7 @@ record AnalysisQualityFixture(
 				null,
 				null,
 				List.of(),
+				null,
 				null
 		);
 	}

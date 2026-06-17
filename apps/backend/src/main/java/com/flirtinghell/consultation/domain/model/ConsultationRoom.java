@@ -11,6 +11,8 @@ public record ConsultationRoom(
 		String cautionNotes,
 		StrategyId preferredStrategyId,
 		String lastTurnSummary,
+		// 메모리 Phase A.5: 분석이 쌓여도 일정 크기로 유지되는 구조화 관계상태(JSON, nullable).
+		String relationshipState,
 		int savedReplyCount,
 		Instant archivedAt,
 		Instant createdAt,
@@ -35,6 +37,7 @@ public record ConsultationRoom(
 				cautionNotes,
 				preferredStrategyId,
 				"아직 분석 기록이 없어요",
+				null,
 				0,
 				null,
 				now,
@@ -42,7 +45,7 @@ public record ConsultationRoom(
 		);
 	}
 
-	public ConsultationRoom withAnalysisResult(String summary, Instant now) {
+	public ConsultationRoom withAnalysisResult(String summary, String relationshipState, Instant now) {
 		return new ConsultationRoom(
 				id,
 				userId,
@@ -52,6 +55,7 @@ public record ConsultationRoom(
 				cautionNotes,
 				preferredStrategyId,
 				summary,
+				relationshipState,
 				savedReplyCount + 1,
 				archivedAt,
 				createdAt,

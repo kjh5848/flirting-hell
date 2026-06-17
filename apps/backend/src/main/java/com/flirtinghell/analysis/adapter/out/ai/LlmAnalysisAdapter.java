@@ -294,12 +294,13 @@ class LlmAnalysisAdapter implements AnalysisPort {
 				직전 분석 요약(최근순, 없으면 없음):
 				%s
 				직전에 추론한 상대 유형(5축 JSON, 없으면 없음): %s
+				누적 관계상태(없으면 없음): %s
 
 				붙여넣은 대화/상황:
 				%s
 
 				지침:
-				- 위 직전 요약이 있으면 흐름을 이어서 코칭하라(처음인 척하지 말 것).
+				- 위 직전 요약·누적 관계상태가 있으면 흐름을 이어서 코칭하라(처음인 척하지 말 것).
 				- partnerType(상대 5축)을 추론하고, 내 성향과 상대 유형의 차이를 반영해 답장·다음 행동을 개인화하라.
 				- 반드시 JSON Schema에 맞춰 답하라. 원본 대화 전문은 저장하지 않는다.
 				""".formatted(
@@ -312,6 +313,7 @@ class LlmAnalysisAdapter implements AnalysisPort {
 				blankToFallback(request.myPersonalityIdeal()),
 				recentSummariesText(request.recentSummaries()),
 				blankToFallback(request.latestPartnerType()),
+				blankToFallback(request.relationshipState()),
 				request.rawInput()
 		);
 	}

@@ -48,6 +48,7 @@ class LlmAnalysisAdapterTest {
 				null,
 				null,
 				java.util.List.of(),
+				null,
 				null
 		));
 

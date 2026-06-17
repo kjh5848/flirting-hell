@@ -69,12 +69,29 @@ public class AnalysisService {
 				userResult.profile().personalitySelf(),
 				userResult.profile().personalityIdeal(),
 				recentSummaries,
-				latestPartnerType
+				latestPartnerType,
+				room.relationshipState()
 		));
 		AnalysisTurn turn = toTurn(userId, room.id(), draft, now);
 		AnalysisTurn savedTurn = analysisTurnRepository.save(turn);
-		consultationRoomRepository.save(room.withAnalysisResult(savedTurn.summary(), now));
+		// 메모리 Phase A.5: 새 turn을 관계상태에 결정적으로 compaction해 일정 크기로 유지.
+		String rollup = compactRelationshipState(room, savedTurn);
+		consultationRoomRepository.save(
+				room.withAnalysisResult(savedTurn.summary(), rollup, now));
 		return AnalysisTurnResult.from(savedTurn);
+	}
+
+	/// 분석이 쌓여도 일정 크기로 유지되는 관계상태를 결정적으로 만든다(LLM 미사용).
+	private String compactRelationshipState(ConsultationRoom room, AnalysisTurn turn) {
+		int turnCount = room.savedReplyCount() + 1;
+		StringBuilder builder = new StringBuilder()
+				.append("누적 분석 ").append(turnCount).append("회")
+				.append(" · 관계 단계: ").append(room.relationshipStage().name())
+				.append(" · 최근 요약: ").append(turn.summary());
+		if (turn.partnerType() != null && !turn.partnerType().isBlank()) {
+			builder.append(" · 최신 상대유형: ").append(turn.partnerType());
+		}
+		return builder.toString();
 	}
 
 	public RefineResult refineReply(String firebaseUid, String roomId, RefineCommand command) {

@@ -144,6 +144,7 @@ class MockAnalysisParityTest {
 				null,
 				null,
 				recentSummaries,
+				null,
 				null
 		);
 	}

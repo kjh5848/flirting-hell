@@ -90,7 +90,9 @@ public interface AnalysisPort {
 			String myPersonalitySelf,
 			String myPersonalityIdeal,
 			List<String> recentSummaries,
-			String latestPartnerType
+			String latestPartnerType,
+			// 메모리 Phase A.5: 누적된 구조화 관계상태(compaction 결과). nullable.
+			String relationshipState
 	) {
 		public AnalysisRequest {
 			recentSummaries = recentSummaries == null ? List.of() : List.copyOf(recentSummaries);
