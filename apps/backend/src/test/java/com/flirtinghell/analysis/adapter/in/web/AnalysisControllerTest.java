@@ -56,7 +56,7 @@ class AnalysisControllerTest {
 				.andExpect(status().isCreated())
 				.andExpect(jsonPath("$.data.turn.turnId", startsWith("turn_")))
 				.andExpect(jsonPath("$.data.turn.sourceType").value("KAKAO"))
-				.andExpect(jsonPath("$.data.turn.summary").value("상대가 집에서 쉬는 흐름이라 가볍게 대화를 이어갈 수 있어요."))
+				.andExpect(jsonPath("$.data.turn.summary").value("호감 신호가 보이는 편이라 자연스럽게 이어가기 좋아요."))
 				.andExpect(jsonPath("$.data.turn.recommendedStrategyId").value("MAKE_PLAN"))
 				.andExpect(jsonPath("$.data.turn.primaryReply").value("오 좋다 ㅋㅋ 그럼 오늘은 집에서 충전하는 날이네. 저녁은 뭐 먹을 생각이야?"))
 				.andExpect(jsonPath("$.data.turn.alternativeReplies", hasSize(2)))
@@ -74,7 +74,7 @@ class AnalysisControllerTest {
 		mockMvc.perform(get("/api/rooms")
 						.header("Authorization", authorization))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.data.rooms[0].lastTurnSummary").value("상대가 집에서 쉬는 흐름이라 가볍게 대화를 이어갈 수 있어요."))
+				.andExpect(jsonPath("$.data.rooms[0].lastTurnSummary").value("호감 신호가 보이는 편이라 자연스럽게 이어가기 좋아요."))
 				.andExpect(jsonPath("$.data.rooms[0].savedReplyCount").value(1));
 	}
 }
