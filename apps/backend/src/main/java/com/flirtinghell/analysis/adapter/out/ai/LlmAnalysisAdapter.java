@@ -95,6 +95,49 @@ class LlmAnalysisAdapter implements AnalysisPort {
 		}
 	}
 
+	@Override
+	public String refineReply(RefineRequest request) {
+		try {
+			String responseJson = client.generateJson(new LlmPrompt(
+					SYSTEM_INSTRUCTIONS,
+					refinePrompt(request),
+					Map.of(
+							"type", "object",
+							"additionalProperties", false,
+							"required", List.of("reply"),
+							"properties", Map.of("reply", Map.of("type", "string"))
+					)
+			));
+			return objectMapper.readTree(responseJson).get("reply").asText();
+		} catch (JsonProcessingException exception) {
+			throw new IllegalStateException("LLM refine response did not match the expected schema.", exception);
+		}
+	}
+
+	private String refinePrompt(RefineRequest request) {
+		return """
+				직전 추천 답장: %s
+				상대 유형(5축 JSON, 없으면 없음): %s
+				요청한 톤 방향: %s
+
+				위 답장을 요청한 톤 방향으로 자연스럽게 다시 써라. 상대를 압박하거나 조종하지 말고,
+				사용자의 말투를 과하게 바꾸지 마라. JSON {"reply": "..."} 형식으로만 답하라.
+				""".formatted(
+				request.previousReply(),
+				blankToFallback(request.latestPartnerType()),
+				refineDirectionLabel(request.direction())
+		);
+	}
+
+	private String refineDirectionLabel(RefineDirection direction) {
+		return switch (direction) {
+			case LIGHTER -> "더 가볍고 편하게";
+			case MORE_SERIOUS -> "더 진지하고 마음을 담아서";
+			case SLOWER -> "부담을 줄이고 천천히 가는 톤으로";
+			case BOLDER -> "조금 더 적극적으로(단, 압박은 금지)";
+		};
+	}
+
 	private static LlmProviderProperties resolveProperties(
 			String provider,
 			String gptBaseUrl,

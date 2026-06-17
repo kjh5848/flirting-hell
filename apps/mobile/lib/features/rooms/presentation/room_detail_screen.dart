@@ -66,7 +66,11 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
             const _EmptyHistoryCard()
           else
             for (final turn in detail.recentTurns) ...[
-              _AnalysisTurnCard(turn: turn, idealAxes: idealAxes),
+              _AnalysisTurnCard(
+                turn: turn,
+                idealAxes: idealAxes,
+                roomId: widget.roomId,
+              ),
               const SizedBox(height: 12),
             ],
         ],
@@ -266,10 +270,12 @@ class _EmptyHistoryCard extends StatelessWidget {
 class _AnalysisTurnCard extends StatelessWidget {
   const _AnalysisTurnCard({
     required this.turn,
+    required this.roomId,
     this.idealAxes,
   });
 
   final AnalysisTurn turn;
+  final String roomId;
 
   /// 내 이상형 5축. 설정돼 있으면 상대 유형과의 적합도를 계산한다.
   final Map<String, int>? idealAxes;
@@ -303,7 +309,7 @@ class _AnalysisTurnCard extends StatelessWidget {
             _PartnerTypeCard(partnerType: partnerType, idealAxes: idealAxes),
           ],
           const SizedBox(height: 14),
-          _PrimaryReplyCard(reply: turn.primaryReply),
+          _PrimaryReplyCard(reply: turn.primaryReply, roomId: roomId),
           if (turn.alternativeReplies.isNotEmpty) ...[
             const SizedBox(height: 14),
             Text('다른 톤', style: Theme.of(context).textTheme.labelSmall),
@@ -444,13 +450,49 @@ class _InsightGrid extends StatelessWidget {
   }
 }
 
-class _PrimaryReplyCard extends StatelessWidget {
-  const _PrimaryReplyCard({required this.reply});
+class _PrimaryReplyCard extends ConsumerStatefulWidget {
+  const _PrimaryReplyCard({required this.reply, required this.roomId});
 
   final String reply;
+  final String roomId;
+
+  @override
+  ConsumerState<_PrimaryReplyCard> createState() => _PrimaryReplyCardState();
+}
+
+class _PrimaryReplyCardState extends ConsumerState<_PrimaryReplyCard> {
+  String? _refined;
+  bool _loading = false;
+
+  static const _directions = [
+    ('LIGHTER', '더 가볍게'),
+    ('MORE_SERIOUS', '더 진지하게'),
+    ('SLOWER', '천천히'),
+    ('BOLDER', '적극적으로'),
+  ];
+
+  Future<void> _refine(String direction) async {
+    if (_loading) return;
+    setState(() => _loading = true);
+    try {
+      final reply = await ref
+          .read(roomsApiProvider)
+          .refineReply(widget.roomId, widget.reply, direction);
+      if (mounted) setState(() => _refined = reply);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('다시 쓰지 못했어요. 잠시 후 다시 시도하세요.')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final shown = _refined ?? widget.reply;
     return SectionCard(
       backgroundColor: const Color(0xFF1D1719),
       borderColor: const Color(0xFF1D1719),
@@ -458,10 +500,35 @@ class _PrimaryReplyCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AppStatusChip(label: '1순위 답장'),
+          Row(
+            children: [
+              AppStatusChip(label: _refined == null ? '1순위 답장' : '다시 쓴 답장'),
+              const Spacer(),
+              if (_loading)
+                const SizedBox.square(
+                  dimension: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              else if (_refined != null)
+                GestureDetector(
+                  onTap: () => setState(() => _refined = null),
+                  child: const Text(
+                    '원래대로',
+                    style: TextStyle(
+                      color: Color(0xFFF6EDEE),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+            ],
+          ),
           const SizedBox(height: 12),
           Text(
-            reply,
+            shown,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 21,
@@ -469,6 +536,47 @@ class _PrimaryReplyCard extends StatelessWidget {
               height: 1.25,
               letterSpacing: -0.6,
             ),
+          ),
+          const SizedBox(height: 14),
+          const Text(
+            '다른 톤으로 다시',
+            style: TextStyle(
+              color: Color(0xFFB9A9AD),
+              fontSize: 11,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final (value, label) in _directions)
+                GestureDetector(
+                  onTap: _loading ? null : () => _refine(value),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2A2125),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      child: Text(
+                        label,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ],
       ),

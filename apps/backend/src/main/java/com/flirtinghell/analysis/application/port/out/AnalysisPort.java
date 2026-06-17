@@ -10,6 +10,23 @@ public interface AnalysisPort {
 
 	AnalysisDraft analyze(AnalysisRequest request);
 
+	/// 답장을 원하는 톤 방향으로 다시 제안한다(비영속 ephemeral). 새 turn을 만들지 않는다.
+	String refineReply(RefineRequest request);
+
+	enum RefineDirection {
+		LIGHTER,
+		MORE_SERIOUS,
+		SLOWER,
+		BOLDER
+	}
+
+	record RefineRequest(
+			String previousReply,
+			RefineDirection direction,
+			String latestPartnerType
+	) {
+	}
+
 	record AnalysisRequest(
 			String roomAlias,
 			RelationshipStage relationshipStage,

@@ -65,6 +65,18 @@ class MockAnalysisParityTest {
 		assertThat(warm).isNotEqualTo(distant);
 	}
 
+	@Test
+	void refineReturnsDistinctNonBlankReplyPerDirection() {
+		java.util.Set<String> replies = new java.util.HashSet<>();
+		for (AnalysisPort.RefineDirection direction : AnalysisPort.RefineDirection.values()) {
+			String reply = mock.refineReply(
+					new AnalysisPort.RefineRequest("오 좋다 ㅋㅋ 오늘 뭐해?", direction, null));
+			assertThat(reply).as("refine %s", direction).isNotBlank();
+			replies.add(reply);
+		}
+		assertThat(replies).hasSize(AnalysisPort.RefineDirection.values().length);
+	}
+
 	private void assertValidPartnerType(String partnerType, String input) {
 		assertThat(partnerType).as("partnerType present: %s", input).isNotBlank();
 		try {

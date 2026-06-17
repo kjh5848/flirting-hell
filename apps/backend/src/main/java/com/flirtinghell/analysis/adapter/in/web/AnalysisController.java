@@ -1,5 +1,6 @@
 package com.flirtinghell.analysis.adapter.in.web;
 
+import com.flirtinghell.analysis.application.port.out.AnalysisPort;
 import com.flirtinghell.analysis.application.service.AnalysisService;
 import com.flirtinghell.consultation.domain.model.StrategyId;
 import com.flirtinghell.shared.api.ApiResponse;
@@ -8,6 +9,7 @@ import com.flirtinghell.shared.security.AuthenticatedUser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -54,5 +56,32 @@ public class AnalysisController {
 	}
 
 	public record CreateAnalysisResponse(AnalysisService.AnalysisTurnResult turn) {
+	}
+
+	@PostMapping("/refine")
+	ApiResponse<RefineReplyResponse> refineReply(
+			@AuthenticationPrincipal AuthenticatedUser user,
+			@PathVariable String roomId,
+			@Valid @RequestBody RefineReplyRequest body,
+			HttpServletRequest request
+	) {
+		AnalysisService.RefineResult result = analysisService.refineReply(
+				user.firebaseUid(),
+				roomId,
+				body.toCommand()
+		);
+		return ApiResponse.of(new RefineReplyResponse(result.reply()), RequestIds.from(request));
+	}
+
+	public record RefineReplyRequest(
+			@NotBlank @Size(max = 2000) String previousReply,
+			@NotNull AnalysisPort.RefineDirection direction
+	) {
+		AnalysisService.RefineCommand toCommand() {
+			return new AnalysisService.RefineCommand(previousReply, direction);
+		}
+	}
+
+	public record RefineReplyResponse(String reply) {
 	}
 }

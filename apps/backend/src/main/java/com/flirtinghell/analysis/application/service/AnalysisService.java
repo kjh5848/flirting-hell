@@ -77,6 +77,24 @@ public class AnalysisService {
 		return AnalysisTurnResult.from(savedTurn);
 	}
 
+	public RefineResult refineReply(String firebaseUid, String roomId, RefineCommand command) {
+		String userId = userBootstrapService.bootstrap(firebaseUid).user().userId();
+		consultationRoomRepository.findByIdAndUserId(roomId, userId)
+				.orElseThrow(() -> new ResourceNotFoundException("ROOM_NOT_FOUND", "상담방을 찾을 수 없습니다."));
+		String latestPartnerType = analysisTurnRepository
+				.findRecentByRoomIdAndUserId(roomId, userId, 1).stream()
+				.map(AnalysisTurn::partnerType)
+				.filter(value -> value != null && !value.isBlank())
+				.findFirst()
+				.orElse(null);
+		String reply = analysisPort.refineReply(new AnalysisPort.RefineRequest(
+				command.previousReply(),
+				command.direction(),
+				latestPartnerType
+		));
+		return new RefineResult(reply);
+	}
+
 	private StrategyId resolveStrategy(StrategyId requestedStrategyId, StrategyId preferredStrategyId) {
 		if (requestedStrategyId != null) {
 			return requestedStrategyId;
@@ -116,6 +134,15 @@ public class AnalysisService {
 			String rawInput,
 			StrategyId requestedStrategyId
 	) {
+	}
+
+	public record RefineCommand(
+			String previousReply,
+			AnalysisPort.RefineDirection direction
+	) {
+	}
+
+	public record RefineResult(String reply) {
 	}
 
 	public record AnalysisTurnResult(

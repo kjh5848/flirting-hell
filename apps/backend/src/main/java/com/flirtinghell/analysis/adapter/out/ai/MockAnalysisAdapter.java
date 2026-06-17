@@ -59,6 +59,17 @@ class MockAnalysisAdapter implements AnalysisPort {
 		);
 	}
 
+	@Override
+	public String refineReply(RefineRequest request) {
+		// mock: 방향별 톤 예시를 결정적으로 반환(실 LLM은 previousReply를 실제로 다시 씀).
+		return switch (request.direction()) {
+			case LIGHTER -> "오 그래 ㅋㅋ 별거 아니야, 편하게 생각해~";
+			case MORE_SERIOUS -> "사실 너랑 이렇게 얘기하는 거 좋아서 더 알아가고 싶어.";
+			case SLOWER -> "급할 거 없어 ㅋㅋ 천천히 알아가자.";
+			case BOLDER -> "솔직히 말하면 너 보고 싶었어. 이번 주에 시간 어때?";
+		};
+	}
+
 	/// 입력 신호로 상황 시나리오를 결정적으로 감지한다(mock). 시나리오마다 상대 5축
 	/// 유형·요약·주의가 현실적으로 달라져 키 없이도 다양한 케이스를 데모/검증할 수 있다.
 	private Scenario detectScenario(String rawInput, StrategyId strategyId) {

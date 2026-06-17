@@ -52,6 +52,24 @@ class RoomsApi {
     return AnalysisTurn.fromJson(turn);
   }
 
+  /// 답장을 원하는 톤 방향으로 다시 받는다(비영속). [direction]은 백엔드 enum 이름.
+  Future<String> refineReply(
+    String roomId,
+    String previousReply,
+    String direction,
+  ) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/rooms/$roomId/analyses/refine',
+      data: {'previousReply': previousReply, 'direction': direction},
+    );
+    final data = _responseData(response);
+    final reply = data['reply'];
+    if (reply is! String) {
+      throw StateError('Refine reply response data is invalid.');
+    }
+    return reply;
+  }
+
   Map<String, dynamic> _responseData(Response<Map<String, dynamic>> response) {
     final body = response.data;
     if (body == null) {
