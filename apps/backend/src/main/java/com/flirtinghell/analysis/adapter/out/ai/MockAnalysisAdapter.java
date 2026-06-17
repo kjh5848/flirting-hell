@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import com.flirtinghell.analysis.application.port.out.AnalysisPort;
 import com.flirtinghell.analysis.domain.model.InputSourceType;
+import com.flirtinghell.consultation.domain.model.RelationshipStage;
 import com.flirtinghell.consultation.domain.model.StrategyId;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -68,6 +69,62 @@ class MockAnalysisAdapter implements AnalysisPort {
 			case SLOWER -> "급할 거 없어 ㅋㅋ 천천히 알아가자.";
 			case BOLDER -> "솔직히 말하면 너 보고 싶었어. 이번 주에 시간 어때?";
 		};
+	}
+
+	@Override
+	public PlanDraft suggestPlan(PlanRequest request) {
+		// 코스는 관계 단계별로, 확인 포인트는 식습관·취향 기반(궁합 가늠). 결정적(mock).
+		List<String> foodCheckPoints = List.of(
+				"식사 전에 '혹시 못 먹는 거 있어?' 가볍게 물어보기 — 알레르기·비건·매운맛 취향이 한 번에 드러나요.",
+				"좋아하는 음식 한두 개 알아두기 — 다음 약속을 자연스럽게 잡는 핑계가 돼요.",
+				"메뉴 정하는 방식(빨리 정함/신중함)도 성향 힌트예요. 나와 페이스가 맞는지 같이 봐요."
+		);
+
+		RelationshipStage stage = request.relationshipStage();
+		if (stage == RelationshipStage.FIRST_CONTACT
+				|| stage == RelationshipStage.TALKING
+				|| stage == RelationshipStage.UNKNOWN) {
+			return new PlanDraft(
+					"부담 없는 첫 만남",
+					List.of(
+							new PlanStep("가벼운 카페", "1~2시간 정도, 자리 옮기기 쉬운 곳으로 부담을 낮춥니다."),
+							new PlanStep("짧은 산책", "대화가 잘 풀리면 근처를 천천히 걸으며 자연스럽게 이어갑니다."),
+							new PlanStep("간단한 식사(선택)", "분위기가 좋으면 가벼운 한 끼로 자연스럽게 연장합니다.")
+					),
+					foodCheckPoints,
+					List.of(
+							"첫 만남부터 코스를 길게 잡지 마세요. 여운을 남기는 편이 좋아요.",
+							"맛집 예약을 강하게 밀어붙이기보다 상대 취향을 먼저 확인하세요."
+					)
+			);
+		}
+		if (stage == RelationshipStage.RECOVERY) {
+			return new PlanDraft(
+					"부드러운 재회",
+					List.of(
+							new PlanStep("편한 카페", "지난 어색함을 덜 수 있는 익숙하고 편안한 장소를 고릅니다."),
+							new PlanStep("가벼운 디저트", "무겁지 않게, 짧고 기분 좋게 마무리합니다.")
+					),
+					foodCheckPoints,
+					List.of(
+							"지난 일을 길게 곱씹지 마세요. 가볍게 다시 시작하는 자리로 둡니다.",
+							"무리한 분위기 연출보다 편안함을 우선하세요."
+					)
+			);
+		}
+		return new PlanDraft(
+				"한 걸음 더 가까워지는 데이트",
+				List.of(
+						new PlanStep("취향 맞춘 식사", "상대가 좋아하는 음식 기준으로 식당을 고르면 배려가 전달됩니다."),
+						new PlanStep("함께 하는 활동", "전시·산책·소품샵처럼 대화가 이어지는 활동을 곁들입니다."),
+						new PlanStep("가벼운 마무리", "카페나 야경처럼 여운 있는 마무리로 다음을 기약합니다.")
+				),
+				foodCheckPoints,
+				List.of(
+						"좋은 흐름이어도 상대 속도를 앞지르지 마세요.",
+						"비용·일정은 미리 가볍게 공유해 부담을 줄이세요."
+				)
+		);
 	}
 
 	@Override

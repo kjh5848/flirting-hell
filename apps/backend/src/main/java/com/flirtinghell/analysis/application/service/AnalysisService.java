@@ -116,6 +116,25 @@ public class AnalysisService {
 		return new CoachReplyResult(reply);
 	}
 
+	public AnalysisPort.PlanDraft suggestPlan(String firebaseUid, String roomId) {
+		UserBootstrapService.UserResult userResult = userBootstrapService.bootstrap(firebaseUid).user();
+		String userId = userResult.userId();
+		ConsultationRoom room = consultationRoomRepository.findByIdAndUserId(roomId, userId)
+				.orElseThrow(() -> new ResourceNotFoundException("ROOM_NOT_FOUND", "상담방을 찾을 수 없습니다."));
+		String latestPartnerType = analysisTurnRepository
+				.findRecentByRoomIdAndUserId(roomId, userId, 1).stream()
+				.map(AnalysisTurn::partnerType)
+				.filter(value -> value != null && !value.isBlank())
+				.findFirst()
+				.orElse(null);
+		return analysisPort.suggestPlan(new AnalysisPort.PlanRequest(
+				room.relationshipStage(),
+				room.currentConcern(),
+				latestPartnerType,
+				userResult.profile().personalityIdeal()
+		));
+	}
+
 	private StrategyId resolveStrategy(StrategyId requestedStrategyId, StrategyId preferredStrategyId) {
 		if (requestedStrategyId != null) {
 			return requestedStrategyId;

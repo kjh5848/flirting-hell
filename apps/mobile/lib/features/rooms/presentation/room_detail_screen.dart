@@ -64,6 +64,13 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
           ),
           const SizedBox(height: 12),
           _CoachEntryCard(roomId: detail.room.roomId),
+          const SizedBox(height: 10),
+          _ActionEntryCard(
+            icon: Icons.map_rounded,
+            title: '데이트 플랜',
+            subtitle: '코스 + 상대 식습관·취향으로 궁합까지 확인',
+            onTap: () => context.push('/rooms/${detail.room.roomId}/plan'),
+          ),
           const SizedBox(height: 12),
           if (detail.recentTurns.isEmpty)
             const _EmptyHistoryCard()
@@ -281,6 +288,48 @@ class _CoachEntryCard extends StatelessWidget {
                     '붙여넣기 말고, 지금 고민을 편하게 털어놓고 싶을 때',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, color: Color(0xFF9B8A8E)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ActionEntryCard extends StatelessWidget {
+  const _ActionEntryCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(24),
+      onTap: onTap,
+      child: SectionCard(
+        backgroundColor: const Color(0xFFFFF8F4),
+        child: Row(
+          children: [
+            Icon(icon, color: const Color(0xFFE43F5A)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: 4),
+                  Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
                 ],
               ),
             ),

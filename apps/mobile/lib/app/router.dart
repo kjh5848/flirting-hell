@@ -11,6 +11,7 @@ import '../features/onboarding/presentation/onboarding_screen.dart';
 import '../features/personality/presentation/personality_setup_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/rooms/presentation/coach_chat_screen.dart';
+import '../features/rooms/presentation/date_plan_screen.dart';
 import '../features/rooms/presentation/room_detail_screen.dart';
 import '../features/rooms/presentation/rooms_screen.dart';
 import '../features/saved_replies/presentation/saved_replies_screen.dart';
@@ -52,6 +53,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/rooms/:roomId/coach',
         builder: (context, state) => CoachChatScreen(
+          roomId: state.pathParameters['roomId']!,
+        ),
+      ),
+      GoRoute(
+        path: '/rooms/:roomId/plan',
+        builder: (context, state) => DatePlanScreen(
           roomId: state.pathParameters['roomId']!,
         ),
       ),

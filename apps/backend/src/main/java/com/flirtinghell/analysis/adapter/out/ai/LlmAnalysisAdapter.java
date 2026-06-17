@@ -115,6 +115,81 @@ class LlmAnalysisAdapter implements AnalysisPort {
 	}
 
 	@Override
+	public PlanDraft suggestPlan(PlanRequest request) {
+		try {
+			String responseJson = client.generateJson(new LlmPrompt(
+					SYSTEM_INSTRUCTIONS,
+					planPrompt(request),
+					planSchema()
+			));
+			LlmPlanResponse response = objectMapper.readValue(responseJson, LlmPlanResponse.class);
+			return new PlanDraft(
+					response.theme(),
+					response.steps().stream()
+							.map(step -> new PlanStep(step.title(), step.detail()))
+							.toList(),
+					response.checkPoints(),
+					response.cautions()
+			);
+		} catch (JsonProcessingException exception) {
+			throw new IllegalStateException("LLM plan response did not match the expected schema.", exception);
+		}
+	}
+
+	private String planPrompt(PlanRequest request) {
+		return """
+				데이트 플랜을 제안하라. 코스(steps)뿐 아니라, 상대의 식습관·좋아하는/싫어하는 음식 같은
+				취향을 자연스럽게 확인해 "나와 맞는지(궁합)"를 가늠할 확인 포인트(checkPoints)를 반드시 포함하라.
+
+				관계 단계: %s
+				현재 고민: %s
+				상대 유형(5축 JSON, 없으면 없음): %s
+				내가 원하는 이상형(5축 JSON, 없으면 없음): %s
+
+				상대를 압박·조종하지 말고, 관계 단계에 맞는 부담 없는 코스를 제안하라.
+				반드시 JSON Schema에 맞춰 답하라.
+				""".formatted(
+				request.relationshipStage(),
+				blankToFallback(request.currentConcern()),
+				blankToFallback(request.latestPartnerType()),
+				blankToFallback(request.myPersonalityIdeal())
+		);
+	}
+
+	private Map<String, Object> planSchema() {
+		Map<String, Object> stringField = Map.of("type", "string");
+		Map<String, Object> stringArray = Map.of("type", "array", "items", stringField);
+		Map<String, Object> stepItem = Map.of(
+				"type", "object",
+				"additionalProperties", false,
+				"required", List.of("title", "detail"),
+				"properties", Map.of("title", stringField, "detail", stringField)
+		);
+		return Map.of(
+				"type", "object",
+				"additionalProperties", false,
+				"required", List.of("theme", "steps", "checkPoints", "cautions"),
+				"properties", Map.of(
+						"theme", stringField,
+						"steps", Map.of("type", "array", "items", stepItem),
+						"checkPoints", stringArray,
+						"cautions", stringArray
+				)
+		);
+	}
+
+	private record LlmPlanResponse(
+			String theme,
+			List<LlmPlanStep> steps,
+			List<String> checkPoints,
+			List<String> cautions
+	) {
+	}
+
+	private record LlmPlanStep(String title, String detail) {
+	}
+
+	@Override
 	public String coachReply(CoachRequest request) {
 		try {
 			String responseJson = client.generateJson(new LlmPrompt(

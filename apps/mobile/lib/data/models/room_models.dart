@@ -201,6 +201,46 @@ class CreateAnalysisPayload {
   }
 }
 
+/// 데이트 플랜(비영속). 코스 + 식습관·취향 기반 궁합 확인 포인트.
+class DatePlan {
+  const DatePlan({
+    required this.theme,
+    required this.steps,
+    required this.checkPoints,
+    required this.cautions,
+  });
+
+  factory DatePlan.fromJson(Map<String, dynamic> json) {
+    return DatePlan(
+      theme: json['theme'] as String,
+      steps: _asList(json['steps'])
+          .map((item) => PlanStep.fromJson(_asMap(item)))
+          .toList(growable: false),
+      checkPoints: _asStringList(json['checkPoints']),
+      cautions: _asStringList(json['cautions']),
+    );
+  }
+
+  final String theme;
+  final List<PlanStep> steps;
+  final List<String> checkPoints;
+  final List<String> cautions;
+}
+
+class PlanStep {
+  const PlanStep({required this.title, required this.detail});
+
+  factory PlanStep.fromJson(Map<String, dynamic> json) {
+    return PlanStep(
+      title: json['title'] as String,
+      detail: json['detail'] as String,
+    );
+  }
+
+  final String title;
+  final String detail;
+}
+
 Map<String, dynamic> _asMap(Object? value) {
   if (value is Map<String, dynamic>) {
     return value;

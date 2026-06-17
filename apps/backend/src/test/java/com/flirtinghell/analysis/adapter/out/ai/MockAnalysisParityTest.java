@@ -96,6 +96,28 @@ class MockAnalysisParityTest {
 		assertThat(reply).isNotEqualTo(opener);
 	}
 
+	@Test
+	void planIncludesCourseAndFoodCompatibilityCheckPoints() {
+		for (com.flirtinghell.consultation.domain.model.RelationshipStage stage
+				: com.flirtinghell.consultation.domain.model.RelationshipStage.values()) {
+			AnalysisPort.PlanDraft plan = mock.suggestPlan(new AnalysisPort.PlanRequest(
+					stage, "호감 확인", null, null));
+			assertThat(plan.theme()).as("theme %s", stage).isNotBlank();
+			assertThat(plan.steps()).as("steps %s", stage).isNotEmpty();
+			assertThat(plan.steps()).allSatisfy(step -> {
+				assertThat(step.title()).isNotBlank();
+				assertThat(step.detail()).isNotBlank();
+			});
+			assertThat(plan.cautions()).as("cautions %s", stage).isNotEmpty();
+			// 핵심: 식습관/음식 기반 궁합 확인 포인트가 들어있어야 한다.
+			assertThat(plan.checkPoints()).as("checkPoints %s", stage).isNotEmpty();
+			assertThat(plan.checkPoints().stream()
+					.anyMatch(point -> point.contains("음식") || point.contains("못 먹는") || point.contains("메뉴")))
+					.as("food check point present %s", stage)
+					.isTrue();
+		}
+	}
+
 	private void assertValidPartnerType(String partnerType, String input) {
 		assertThat(partnerType).as("partnerType present: %s", input).isNotBlank();
 		try {

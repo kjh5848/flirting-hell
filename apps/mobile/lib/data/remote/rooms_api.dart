@@ -70,6 +70,17 @@ class RoomsApi {
     return reply;
   }
 
+  /// 데이트 플랜을 받는다(비영속). 코스 + 궁합 확인 포인트.
+  Future<DatePlan> fetchPlan(String roomId) async {
+    final response = await _dio.get<Map<String, dynamic>>('/rooms/$roomId/plan');
+    final data = _responseData(response);
+    final plan = data['plan'];
+    if (plan is! Map<String, dynamic>) {
+      throw StateError('Plan response data is invalid.');
+    }
+    return DatePlan.fromJson(plan);
+  }
+
   /// 코치와의 멀티턴 대화에 한 번 응답받는다(상태 비저장). [history]는
   /// `{role: 'USER'|'COACH', text: ...}` 목록(이번 메시지 이전까지).
   Future<String> coachReply(
