@@ -28,7 +28,11 @@ record AnalysisQualityFixture(
 				currentConcern,
 				cautionNotes,
 				requestedStrategyId,
-				rawInput
+				rawInput,
+				null,
+				null,
+				List.of(),
+				null
 		);
 	}
 

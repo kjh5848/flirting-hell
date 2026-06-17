@@ -44,7 +44,11 @@ class LlmAnalysisAdapterTest {
 				"대화가 이어지는지 확인",
 				"추궁처럼 보이는 말은 피하기",
 				StrategyId.MAKE_PLAN,
-				"나: 오늘 뭐해?\n상대: 그냥 집에 있어 ㅋㅋ"
+				"나: 오늘 뭐해?\n상대: 그냥 집에 있어 ㅋㅋ",
+				null,
+				null,
+				java.util.List.of(),
+				null
 		));
 
 		LlmPrompt prompt = capturedPrompt.get();

@@ -40,18 +40,36 @@ public class AnalysisService {
 	}
 
 	public AnalysisTurnResult createAnalysis(String firebaseUid, String roomId, CreateAnalysisCommand command) {
-		String userId = userBootstrapService.bootstrap(firebaseUid).user().userId();
+		UserBootstrapService.UserResult userResult = userBootstrapService.bootstrap(firebaseUid).user();
+		String userId = userResult.userId();
 		ConsultationRoom room = consultationRoomRepository.findByIdAndUserId(roomId, userId)
 				.orElseThrow(() -> new ResourceNotFoundException("ROOM_NOT_FOUND", "상담방을 찾을 수 없습니다."));
 		Instant now = clock.instant();
 		StrategyId strategyId = resolveStrategy(command.requestedStrategyId(), room.preferredStrategyId());
+
+		// 메모리 Phase A: 이전 turn에서 연속성 맥락(요약·최신 상대유형)을 조립한다.
+		List<AnalysisTurn> recentTurns =
+				analysisTurnRepository.findRecentByRoomIdAndUserId(roomId, userId, 3);
+		List<String> recentSummaries = recentTurns.stream()
+				.map(AnalysisTurn::summary)
+				.toList();
+		String latestPartnerType = recentTurns.stream()
+				.map(AnalysisTurn::partnerType)
+				.filter(value -> value != null && !value.isBlank())
+				.findFirst()
+				.orElse(null);
+
 		AnalysisPort.AnalysisDraft draft = analysisPort.analyze(new AnalysisPort.AnalysisRequest(
 				room.alias(),
 				room.relationshipStage(),
 				room.currentConcern(),
 				room.cautionNotes(),
 				strategyId,
-				command.rawInput()
+				command.rawInput(),
+				userResult.profile().personalitySelf(),
+				userResult.profile().personalityIdeal(),
+				recentSummaries,
+				latestPartnerType
 		));
 		AnalysisTurn turn = toTurn(userId, room.id(), draft, now);
 		AnalysisTurn savedTurn = analysisTurnRepository.save(turn);

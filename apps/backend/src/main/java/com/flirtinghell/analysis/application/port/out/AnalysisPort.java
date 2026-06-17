@@ -16,8 +16,16 @@ public interface AnalysisPort {
 			String currentConcern,
 			String cautionNotes,
 			StrategyId requestedStrategyId,
-			String rawInput
+			String rawInput,
+			// 대화 연속성·개인화용 맥락(메모리 Phase A). 전부 nullable.
+			String myPersonalitySelf,
+			String myPersonalityIdeal,
+			List<String> recentSummaries,
+			String latestPartnerType
 	) {
+		public AnalysisRequest {
+			recentSummaries = recentSummaries == null ? List.of() : List.copyOf(recentSummaries);
+		}
 	}
 
 	record AnalysisDraft(
