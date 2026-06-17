@@ -70,6 +70,31 @@ class MockAnalysisAdapter implements AnalysisPort {
 		};
 	}
 
+	@Override
+	public String coachReply(CoachRequest request) {
+		String message = request.userMessage();
+		boolean first = request.history().isEmpty();
+
+		// 공감 → 작은 질문/제안 순서로, 입력 키워드에 따라 결정적으로(mock).
+		if (first) {
+			return "편하게 얘기해도 돼요. 지금 그 사람과의 상황에서 제일 신경 쓰이는 건 뭐예요?";
+		}
+		if (containsAny(message, "불안", "걱정", "초조", "떨려")) {
+			return "그 마음 충분히 그럴 수 있어요. 상대 반응을 단정하기엔 일러요. "
+					+ "지금 확인하고 싶은 한 가지만 골라볼까요?";
+		}
+		if (containsAny(message, "답장", "늦", "읽씹", "연락")) {
+			return "답장 텀은 그날 컨디션일 때가 많아요. 재촉 대신, 다음에 가볍게 이어갈 한마디를 같이 만들어볼까요?";
+		}
+		if (containsAny(message, "약속", "만나", "데이트", "볼까")) {
+			return "좋아요. 부담 없는 선택지부터 제안하면 성공률이 높아요. 상대가 좋아할 만한 활동 하나 떠오르는 거 있어요?";
+		}
+		if (containsAny(message, "싫", "거절", "차였", "관심 없")) {
+			return "속상했겠어요. 거절처럼 느껴져도 상대 사정일 수 있어요. 무리해서 매달리기보다 한 발 여유를 두는 걸 권해요.";
+		}
+		return "그렇군요. 조금 더 들려줄래요? 어떤 결과를 가장 바라는지 알면 다음 한마디를 같이 골라볼 수 있어요.";
+	}
+
 	/// 입력 신호로 상황 시나리오를 결정적으로 감지한다(mock). 시나리오마다 상대 5축
 	/// 유형·요약·주의가 현실적으로 달라져 키 없이도 다양한 케이스를 데모/검증할 수 있다.
 	private Scenario detectScenario(String rawInput, StrategyId strategyId) {

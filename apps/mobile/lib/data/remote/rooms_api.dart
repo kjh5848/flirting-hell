@@ -70,6 +70,25 @@ class RoomsApi {
     return reply;
   }
 
+  /// 코치와의 멀티턴 대화에 한 번 응답받는다(상태 비저장). [history]는
+  /// `{role: 'USER'|'COACH', text: ...}` 목록(이번 메시지 이전까지).
+  Future<String> coachReply(
+    String roomId,
+    List<Map<String, String>> history,
+    String userMessage,
+  ) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/rooms/$roomId/coach',
+      data: {'history': history, 'userMessage': userMessage},
+    );
+    final data = _responseData(response);
+    final reply = data['reply'];
+    if (reply is! String) {
+      throw StateError('Coach reply response data is invalid.');
+    }
+    return reply;
+  }
+
   Map<String, dynamic> _responseData(Response<Map<String, dynamic>> response) {
     final body = response.data;
     if (body == null) {

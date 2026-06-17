@@ -77,6 +77,25 @@ class MockAnalysisParityTest {
 		assertThat(replies).hasSize(AnalysisPort.RefineDirection.values().length);
 	}
 
+	@Test
+	void coachOpensWithListeningThenRespondsToKeywords() {
+		String opener = mock.coachReply(new AnalysisPort.CoachRequest(
+				List.of(), "그 사람 때문에 고민이야", "호감 확인", null, null));
+		assertThat(opener).isNotBlank();
+
+		AnalysisPort.CoachRequest anxious = new AnalysisPort.CoachRequest(
+				List.of(new AnalysisPort.CoachMessage(AnalysisPort.CoachRole.USER, "안녕")),
+				"답장이 늦어서 너무 불안해",
+				"호감 확인",
+				null,
+				null
+		);
+		String reply = mock.coachReply(anxious);
+		assertThat(reply).isNotBlank();
+		// 후속 턴은 오프너와 달라야 한다(공감/맥락 반영).
+		assertThat(reply).isNotEqualTo(opener);
+	}
+
 	private void assertValidPartnerType(String partnerType, String input) {
 		assertThat(partnerType).as("partnerType present: %s", input).isNotBlank();
 		try {

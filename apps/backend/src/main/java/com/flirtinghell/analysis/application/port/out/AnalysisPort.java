@@ -13,6 +13,30 @@ public interface AnalysisPort {
 	/// 답장을 원하는 톤 방향으로 다시 제안한다(비영속 ephemeral). 새 turn을 만들지 않는다.
 	String refineReply(RefineRequest request);
 
+	/// 코치와의 멀티턴 대화에 한 번 응답한다(상태 비저장). 히스토리는 클라이언트가
+	/// 매 호출에 보낸다 — 서버는 대화 원문을 저장하지 않는다(메모리 설계 원칙).
+	String coachReply(CoachRequest request);
+
+	enum CoachRole {
+		USER,
+		COACH
+	}
+
+	record CoachMessage(CoachRole role, String text) {
+	}
+
+	record CoachRequest(
+			List<CoachMessage> history,
+			String userMessage,
+			String roomConcern,
+			String latestPartnerType,
+			String myPersonalityIdeal
+	) {
+		public CoachRequest {
+			history = history == null ? List.of() : List.copyOf(history);
+		}
+	}
+
 	enum RefineDirection {
 		LIGHTER,
 		MORE_SERIOUS,

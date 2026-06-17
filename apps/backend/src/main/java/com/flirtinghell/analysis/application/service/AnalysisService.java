@@ -95,6 +95,27 @@ public class AnalysisService {
 		return new RefineResult(reply);
 	}
 
+	public CoachReplyResult coach(String firebaseUid, String roomId, CoachCommand command) {
+		UserBootstrapService.UserResult userResult = userBootstrapService.bootstrap(firebaseUid).user();
+		String userId = userResult.userId();
+		ConsultationRoom room = consultationRoomRepository.findByIdAndUserId(roomId, userId)
+				.orElseThrow(() -> new ResourceNotFoundException("ROOM_NOT_FOUND", "상담방을 찾을 수 없습니다."));
+		String latestPartnerType = analysisTurnRepository
+				.findRecentByRoomIdAndUserId(roomId, userId, 1).stream()
+				.map(AnalysisTurn::partnerType)
+				.filter(value -> value != null && !value.isBlank())
+				.findFirst()
+				.orElse(null);
+		String reply = analysisPort.coachReply(new AnalysisPort.CoachRequest(
+				command.history(),
+				command.userMessage(),
+				room.currentConcern(),
+				latestPartnerType,
+				userResult.profile().personalityIdeal()
+		));
+		return new CoachReplyResult(reply);
+	}
+
 	private StrategyId resolveStrategy(StrategyId requestedStrategyId, StrategyId preferredStrategyId) {
 		if (requestedStrategyId != null) {
 			return requestedStrategyId;
@@ -143,6 +164,15 @@ public class AnalysisService {
 	}
 
 	public record RefineResult(String reply) {
+	}
+
+	public record CoachCommand(
+			List<AnalysisPort.CoachMessage> history,
+			String userMessage
+	) {
+	}
+
+	public record CoachReplyResult(String reply) {
 	}
 
 	public record AnalysisTurnResult(

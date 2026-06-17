@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/widgets/app_status_chip.dart';
 import '../../../core/widgets/screen_frame.dart';
@@ -61,6 +62,8 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
             onStrategyChanged: (value) => setState(() => _strategyId = value),
             onSubmit: () => _submitAnalysis(detail.room.roomId),
           ),
+          const SizedBox(height: 12),
+          _CoachEntryCard(roomId: detail.room.roomId),
           const SizedBox(height: 12),
           if (detail.recentTurns.isEmpty)
             const _EmptyHistoryCard()
@@ -247,6 +250,43 @@ class _AnalysisInputCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _CoachEntryCard extends StatelessWidget {
+  const _CoachEntryCard({required this.roomId});
+
+  final String roomId;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(24),
+      onTap: () => context.push('/rooms/$roomId/coach'),
+      child: SectionCard(
+        backgroundColor: const Color(0xFFFFF8F4),
+        child: Row(
+          children: [
+            const Icon(Icons.forum_rounded, color: Color(0xFFE43F5A)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('코치와 대화', style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: 4),
+                  Text(
+                    '붙여넣기 말고, 지금 고민을 편하게 털어놓고 싶을 때',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, color: Color(0xFF9B8A8E)),
+          ],
+        ),
       ),
     );
   }

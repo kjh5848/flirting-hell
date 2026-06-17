@@ -114,6 +114,53 @@ class LlmAnalysisAdapter implements AnalysisPort {
 		}
 	}
 
+	@Override
+	public String coachReply(CoachRequest request) {
+		try {
+			String responseJson = client.generateJson(new LlmPrompt(
+					SYSTEM_INSTRUCTIONS,
+					coachPrompt(request),
+					Map.of(
+							"type", "object",
+							"additionalProperties", false,
+							"required", List.of("reply"),
+							"properties", Map.of("reply", Map.of("type", "string"))
+					)
+			));
+			return objectMapper.readTree(responseJson).get("reply").asText();
+		} catch (JsonProcessingException exception) {
+			throw new IllegalStateException("LLM coach response did not match the expected schema.", exception);
+		}
+	}
+
+	private String coachPrompt(CoachRequest request) {
+		StringBuilder history = new StringBuilder();
+		for (AnalysisPort.CoachMessage message : request.history()) {
+			history.append(message.role() == AnalysisPort.CoachRole.USER ? "사용자: " : "코치: ")
+					.append(message.text())
+					.append('\n');
+		}
+		return """
+				너는 사용자의 연애 고민을 들어주고 코칭하는 대화 상대다. 먼저 공감하고, 그다음
+				작은 질문이나 부담 없는 제안을 한다. 조종·압박·집착을 권하지 않는다.
+
+				상담 맥락 - 현재 고민: %s
+				상대 유형(5축 JSON, 없으면 없음): %s
+				사용자가 원하는 이상형(5축 JSON, 없으면 없음): %s
+
+				지금까지 대화:
+				%s사용자: %s
+
+				코치로서 다음 한 마디만 자연스럽게 답하라. JSON {"reply": "..."} 형식으로만 답하라.
+				""".formatted(
+				blankToFallback(request.roomConcern()),
+				blankToFallback(request.latestPartnerType()),
+				blankToFallback(request.myPersonalityIdeal()),
+				history.toString(),
+				request.userMessage()
+		);
+	}
+
 	private String refinePrompt(RefineRequest request) {
 		return """
 				직전 추천 답장: %s
