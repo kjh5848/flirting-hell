@@ -74,6 +74,26 @@ public class AnalysisController {
 		return ApiResponse.of(new CreateAnalysisResponse(turn), RequestIds.from(request));
 	}
 
+	@PatchMapping("/{turnId}/outcome")
+	ApiResponse<CreateAnalysisResponse> setOutcome(
+			@AuthenticationPrincipal AuthenticatedUser user,
+			@PathVariable String roomId,
+			@PathVariable String turnId,
+			@Valid @RequestBody OutcomeRequest body,
+			HttpServletRequest request
+	) {
+		AnalysisService.AnalysisTurnResult turn = analysisService.setOutcome(
+				user.firebaseUid(),
+				roomId,
+				turnId,
+				body.outcome()
+		);
+		return ApiResponse.of(new CreateAnalysisResponse(turn), RequestIds.from(request));
+	}
+
+	public record OutcomeRequest(@NotBlank @Size(max = 40) String outcome) {
+	}
+
 	@PostMapping("/refine")
 	ApiResponse<RefineReplyResponse> refineReply(
 			@AuthenticationPrincipal AuthenticatedUser user,

@@ -83,6 +83,24 @@ class RoomsApi {
     return AnalysisTurn.fromJson(turn);
   }
 
+  /// 추천 답장의 결과 피드백을 기록한다. [outcome]은 SENT_GOOD/SENT_SOSO/NOT_SENT.
+  Future<AnalysisTurn> setOutcome(
+    String roomId,
+    String turnId,
+    String outcome,
+  ) async {
+    final response = await _dio.patch<Map<String, dynamic>>(
+      '/rooms/$roomId/analyses/$turnId/outcome',
+      data: {'outcome': outcome},
+    );
+    final data = _responseData(response);
+    final turn = data['turn'];
+    if (turn is! Map<String, dynamic>) {
+      throw StateError('Outcome response data is invalid.');
+    }
+    return AnalysisTurn.fromJson(turn);
+  }
+
   /// 저장한 답장 목록(상대별).
   Future<List<SavedReply>> fetchSavedReplies() async {
     final response = await _dio.get<Map<String, dynamic>>('/me/saved-replies');

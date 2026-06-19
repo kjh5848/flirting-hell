@@ -87,6 +87,7 @@ class AnalysisTurn {
     required this.createdAt,
     this.partnerType,
     this.saved = false,
+    this.outcome,
   });
 
   factory AnalysisTurn.fromJson(Map<String, dynamic> json) {
@@ -105,6 +106,7 @@ class AnalysisTurn {
       createdAt: DateTime.parse(json['createdAt'] as String),
       partnerType: json['partnerType'] as String?,
       saved: json['saved'] as bool? ?? false,
+      outcome: json['outcome'] as String?,
     );
   }
 
@@ -126,6 +128,9 @@ class AnalysisTurn {
 
   /// 사용자가 저장(북마크)한 답장인지.
   final bool saved;
+
+  /// 결과 피드백(nullable): SENT_GOOD / SENT_SOSO / NOT_SENT.
+  final String? outcome;
 }
 
 /// 저장 탭에 보이는 저장된 답장(상대별).

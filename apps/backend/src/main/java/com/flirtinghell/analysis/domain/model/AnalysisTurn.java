@@ -23,6 +23,8 @@ public record AnalysisTurn(
 		String partnerType,
 		// 사용자가 저장(북마크)한 답장인지.
 		boolean saved,
+		// 결과 피드백(nullable): SENT_GOOD / SENT_SOSO / NOT_SENT 등 클라이언트가 보낸 값.
+		String outcome,
 		Instant createdAt
 ) {
 	public AnalysisTurn {
@@ -35,7 +37,16 @@ public record AnalysisTurn(
 				id, roomId, userId, sourceType, participantSummary, summary,
 				currentState, recommendedStrategyId, warnings, primaryReply,
 				alternativeReplies, replyReason, nextAction, partnerType, value,
-				createdAt
+				outcome, createdAt
+		);
+	}
+
+	public AnalysisTurn withOutcome(String value) {
+		return new AnalysisTurn(
+				id, roomId, userId, sourceType, participantSummary, summary,
+				currentState, recommendedStrategyId, warnings, primaryReply,
+				alternativeReplies, replyReason, nextAction, partnerType, saved,
+				value, createdAt
 		);
 	}
 }

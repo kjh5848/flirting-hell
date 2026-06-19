@@ -84,6 +84,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                   idealAxes: idealAxes,
                   roomId: widget.roomId,
                   onToggleSave: () => _toggleSave(turn.turnId),
+                  onSetOutcome: (value) => _setOutcome(turn.turnId, value),
                 ),
               ),
               const SizedBox(height: 12),
@@ -146,6 +147,19 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('저장 상태를 바꾸지 못했어요.')),
+        );
+      }
+    }
+  }
+
+  Future<void> _setOutcome(String turnId, String outcome) async {
+    try {
+      await ref.read(roomsApiProvider).setOutcome(widget.roomId, turnId, outcome);
+      ref.invalidate(roomDetailProvider(widget.roomId));
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('결과를 기록하지 못했어요.')),
         );
       }
     }
@@ -385,12 +399,14 @@ class _AnalysisTurnCard extends StatelessWidget {
     required this.turn,
     required this.roomId,
     required this.onToggleSave,
+    required this.onSetOutcome,
     this.idealAxes,
   });
 
   final AnalysisTurn turn;
   final String roomId;
   final VoidCallback onToggleSave;
+  final ValueChanged<String> onSetOutcome;
 
   /// 내 이상형 5축. 설정돼 있으면 상대 유형과의 적합도를 계산한다.
   final Map<String, int>? idealAxes;
@@ -473,8 +489,83 @@ class _AnalysisTurnCard extends StatelessWidget {
             ),
           const SizedBox(height: 10),
           _MiniInfoCard(label: '다음 행동', body: turn.nextAction),
+          const SizedBox(height: 12),
+          _OutcomeSection(outcome: turn.outcome, onSelect: onSetOutcome),
         ],
       ),
+    );
+  }
+}
+
+const _outcomeOptions = [
+  ('SENT_GOOD', '보냈고 좋았어요'),
+  ('SENT_SOSO', '보냈는데 그냥 그래요'),
+  ('NOT_SENT', '아직 안 보냈어요'),
+];
+
+String _outcomeLabel(String value) {
+  for (final (key, label) in _outcomeOptions) {
+    if (key == value) return label;
+  }
+  return '기록됨';
+}
+
+class _OutcomeSection extends StatelessWidget {
+  const _OutcomeSection({required this.outcome, required this.onSelect});
+
+  final String? outcome;
+  final ValueChanged<String> onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    if (outcome != null) {
+      return Row(
+        children: [
+          const AppStatusChip(label: '결과', tone: AppStatusChipTone.success),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              _outcomeLabel(outcome!),
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+        ],
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('이 답장, 보냈어요?',
+            style: Theme.of(context).textTheme.labelSmall),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final (value, label) in _outcomeOptions)
+              Pressable(
+                onTap: () => onSelect(value),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF8F5),
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: const Color(0xFFEFE0E3)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    child: Text(
+                      label,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ],
     );
   }
 }

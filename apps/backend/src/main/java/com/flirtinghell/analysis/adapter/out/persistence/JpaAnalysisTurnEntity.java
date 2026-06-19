@@ -67,6 +67,9 @@ class JpaAnalysisTurnEntity {
 	@Column(name = "saved", nullable = false)
 	private boolean saved;
 
+	@Column(name = "outcome")
+	private String outcome;
+
 	@Column(name = "created_at", nullable = false)
 	private Instant createdAt;
 
@@ -89,6 +92,7 @@ class JpaAnalysisTurnEntity {
 			String nextAction,
 			String partnerType,
 			boolean saved,
+			String outcome,
 			Instant createdAt
 	) {
 		this.id = id;
@@ -106,6 +110,7 @@ class JpaAnalysisTurnEntity {
 		this.nextAction = nextAction;
 		this.partnerType = partnerType;
 		this.saved = saved;
+		this.outcome = outcome;
 		this.createdAt = createdAt;
 	}
 
@@ -126,6 +131,7 @@ class JpaAnalysisTurnEntity {
 				turn.nextAction(),
 				turn.partnerType(),
 				turn.saved(),
+				turn.outcome(),
 				turn.createdAt()
 		);
 	}
@@ -147,6 +153,7 @@ class JpaAnalysisTurnEntity {
 				nextAction,
 				partnerType,
 				saved,
+				outcome,
 				createdAt
 		);
 	}

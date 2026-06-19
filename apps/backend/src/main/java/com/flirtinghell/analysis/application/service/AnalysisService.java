@@ -184,8 +184,18 @@ public class AnalysisService {
 				draft.nextAction(),
 				draft.partnerType(),
 				false,
+				null,
 				now
 		);
+	}
+
+	public AnalysisTurnResult setOutcome(String firebaseUid, String roomId, String turnId, String outcome) {
+		String userId = userBootstrapService.bootstrap(firebaseUid).user().userId();
+		AnalysisTurn turn = analysisTurnRepository.findByIdAndUserId(turnId, userId)
+				.filter(found -> found.roomId().equals(roomId))
+				.orElseThrow(() -> new ResourceNotFoundException("TURN_NOT_FOUND", "분석을 찾을 수 없습니다."));
+		AnalysisTurn updated = analysisTurnRepository.save(turn.withOutcome(outcome));
+		return AnalysisTurnResult.from(updated);
 	}
 
 	public AnalysisTurnResult toggleSaved(String firebaseUid, String roomId, String turnId) {
@@ -256,6 +266,7 @@ public class AnalysisService {
 			String nextAction,
 			String partnerType,
 			boolean saved,
+			String outcome,
 			Instant createdAt
 	) {
 		public static AnalysisTurnResult from(AnalysisTurn turn) {
@@ -273,6 +284,7 @@ public class AnalysisService {
 					turn.nextAction(),
 					turn.partnerType(),
 					turn.saved(),
+					turn.outcome(),
 					turn.createdAt()
 			);
 		}
