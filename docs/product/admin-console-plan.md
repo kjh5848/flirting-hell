@@ -1,7 +1,7 @@
 # 어드민 관리 콘솔 — 플랜 (초안)
 
 > 운영자가 사용자·사용량·안전·LLM 운영·지표를 관리하는 웹 콘솔. 모바일 앱과 별개 surface.
-> 상태: **플랜 / 결정 대기**(§3 호스팅, §4 인증).
+> 상태: **플랜 / 결정 확정**(2026-06-19). 호스팅 = **새 `apps/admin`(React Vite)**, 인증 = **Firebase custom claim `admin`**.
 
 ## 1. 목적
 
@@ -65,11 +65,11 @@
 - **Phase 2 (안전·품질)**: 모더레이션 큐 + LLM 운영(품질 리포트 연계).
 - **Phase 3 (성장·수익)**: 콘텐츠/플래그 + 결제 지표(결제 연동 후).
 
-## 9. 결정 필요 요약
+## 9. 결정 (확정 2026-06-19)
 
-1. **호스팅**: A(web 재사용) / B(새 apps/admin·추천) / C(서버 렌더).
-2. **어드민 인증**: Firebase custom claim(추천) / 별도 admin 계정.
-3. 1차 범위: Phase 1만 먼저?
+1. ✅ **호스팅 = 새 `apps/admin`** (React Vite, 권한·배포 격리).
+2. ✅ **어드민 인증 = Firebase custom claim `admin`** + `/api/admin/**` RBAC(ADMIN) + audit.
+3. 1차 범위: **Phase 1**(인증 + 대시보드 + 사용자 + 분석권 ledger)부터, mock-first.
 
 ## 10. 위험
 
