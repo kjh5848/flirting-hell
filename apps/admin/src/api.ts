@@ -13,6 +13,22 @@ async function apiGet<T>(path: string): Promise<T> {
   return body.data as T;
 }
 
+async function apiPatch<T>(path: string, payload: unknown): Promise<T> {
+  const res = await fetch(`/api${path}`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${DEV_ADMIN_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    throw new Error(`요청 실패 (HTTP ${res.status})`);
+  }
+  const body = await res.json();
+  return body.data as T;
+}
+
 export interface OutcomeBreakdown {
   sentGood: number;
   sentSoso: number;
@@ -70,3 +86,37 @@ export const RULE_LABELS: Record<string, string> = {
   GUILT: "죄책감 유발",
   OBSESSION: "집착·통제",
 };
+
+export interface FeatureFlag {
+  key: string;
+  label: string;
+  enabled: boolean;
+}
+
+export interface Announcement {
+  id: string;
+  title: string;
+  body: string;
+  publishedAt: string;
+}
+
+export interface PackageSales {
+  name: string;
+  count: number;
+  revenueKrw: number;
+}
+
+export interface RevenueMetrics {
+  mrrKrw: number;
+  payingUsers: number;
+  conversionRatePercent: number;
+  byPackage: PackageSales[];
+  refundsThisMonth: number;
+}
+
+export const fetchFlags = () => apiGet<FeatureFlag[]>("/admin/flags");
+export const setFlag = (key: string, enabled: boolean) =>
+  apiPatch<FeatureFlag[]>(`/admin/flags/${key}`, { enabled });
+export const fetchAnnouncements = () =>
+  apiGet<{ items: Announcement[] }>("/admin/announcements").then((d) => d.items);
+export const fetchRevenue = () => apiGet<RevenueMetrics>("/admin/revenue");

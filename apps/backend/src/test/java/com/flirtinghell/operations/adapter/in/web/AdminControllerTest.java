@@ -7,8 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.http.MediaType;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -65,5 +67,31 @@ class AdminControllerTest {
 						.header("Authorization", "Bearer dev:admin-1"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.data.provider").exists());
+	}
+
+	@Test
+	void featureFlagCanBeToggled() throws Exception {
+		mockMvc.perform(patch("/api/admin/flags/real_place_recommendation")
+						.header("Authorization", "Bearer dev:admin-1")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("{\"enabled\":true}"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data[0].key").exists());
+	}
+
+	@Test
+	void flagsRequireAdmin() throws Exception {
+		mockMvc.perform(get("/api/admin/flags")
+						.header("Authorization", "Bearer dev:user-1"))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	void revenueReturnsMockMetrics() throws Exception {
+		mockMvc.perform(get("/api/admin/revenue")
+						.header("Authorization", "Bearer dev:admin-1"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data.mrrKrw").exists())
+				.andExpect(jsonPath("$.data.byPackage[0].name").exists());
 	}
 }

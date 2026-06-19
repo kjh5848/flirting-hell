@@ -2,12 +2,19 @@ package com.flirtinghell.operations.adapter.in.web;
 
 import java.util.List;
 
+import com.flirtinghell.operations.domain.FeatureFlagStore;
 import com.flirtinghell.operations.domain.SafetyScanner;
 import com.flirtinghell.shared.api.ApiResponse;
 import com.flirtinghell.shared.api.RequestIds;
+import com.flirtinghell.shared.error.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,6 +27,12 @@ public class AdminController {
 
 	@Value("${flirting-hell.ai.provider:mock}")
 	private String aiProvider;
+
+	private final FeatureFlagStore featureFlags;
+
+	public AdminController(FeatureFlagStore featureFlags) {
+		this.featureFlags = featureFlags;
+	}
 
 	// Phase 2: 안전 규칙을 적용해볼 샘플 AI 출력(시드). 일부러 불량 1~2건을 넣어
 	// 모더레이션 큐가 비지 않게 한다. 실제 라이브 turn 스캔은 후속 단계.
@@ -77,6 +90,69 @@ public class AdminController {
 				new CostEstimate(0, "mock provider는 토큰 비용 0. 실 provider는 키 투입 후 집계.")
 		);
 		return ApiResponse.of(status, RequestIds.from(request));
+	}
+
+	@GetMapping("/flags")
+	ApiResponse<List<FeatureFlagStore.Flag>> flags(HttpServletRequest request) {
+		return ApiResponse.of(featureFlags.all(), RequestIds.from(request));
+	}
+
+	@PatchMapping("/flags/{key}")
+	ApiResponse<List<FeatureFlagStore.Flag>> setFlag(
+			@PathVariable String key,
+			@Valid @RequestBody FlagRequest body,
+			HttpServletRequest request
+	) {
+		if (!featureFlags.set(key, body.enabled())) {
+			throw new ResourceNotFoundException("FLAG_NOT_FOUND", "기능 플래그를 찾을 수 없습니다.");
+		}
+		return ApiResponse.of(featureFlags.all(), RequestIds.from(request));
+	}
+
+	@GetMapping("/announcements")
+	ApiResponse<AnnouncementList> announcements(HttpServletRequest request) {
+		List<Announcement> items = List.of(
+				new Announcement("a1", "v0.2 분석 품질 개선", "추천 답장 톤 조절과 코치 대화를 추가했어요.", "2026-06-18"),
+				new Announcement("a2", "개인정보 안내", "대화 원문은 저장하지 않습니다. 실명·연락처는 지우고 붙여넣어 주세요.", "2026-06-10")
+		);
+		return ApiResponse.of(new AnnouncementList(items), RequestIds.from(request));
+	}
+
+	@GetMapping("/revenue")
+	ApiResponse<RevenueMetrics> revenue(HttpServletRequest request) {
+		// 결제 연동(RevenueCat/AdMob) 전까지 mock 지표.
+		RevenueMetrics revenue = new RevenueMetrics(
+				1284000,  // mrrKrw
+				86,       // payingUsers
+				6,        // conversionRatePercent
+				List.of(
+						new PackageSales("스타터 분석권", 52, 202800),
+						new PackageSales("집중 분석권", 34, 506600)
+				),
+				3         // refundsThisMonth
+		);
+		return ApiResponse.of(revenue, RequestIds.from(request));
+	}
+
+	public record FlagRequest(@NotNull Boolean enabled) {
+	}
+
+	public record AnnouncementList(List<Announcement> items) {
+	}
+
+	public record Announcement(String id, String title, String body, String publishedAt) {
+	}
+
+	public record RevenueMetrics(
+			int mrrKrw,
+			int payingUsers,
+			int conversionRatePercent,
+			List<PackageSales> byPackage,
+			int refundsThisMonth
+	) {
+	}
+
+	public record PackageSales(String name, int count, int revenueKrw) {
 	}
 
 	private record SampleOutput(String source, String text) {
