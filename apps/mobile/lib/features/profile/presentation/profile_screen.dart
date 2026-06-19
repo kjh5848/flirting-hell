@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_status_chip.dart';
 import '../../../core/widgets/compact_list_tile_card.dart';
 import '../../../core/widgets/screen_frame.dart';
@@ -24,8 +25,9 @@ class ProfileScreen extends ConsumerWidget {
       children: [
         DecoratedBox(
           decoration: BoxDecoration(
-            color: const Color(0xFF2A2024),
+            color: AppTheme.heroSurface,
             borderRadius: BorderRadius.circular(26),
+            border: Border.all(color: AppTheme.heroBorder),
           ),
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -37,7 +39,7 @@ class ProfileScreen extends ConsumerWidget {
                 Text(
                   profile?.nickname ?? '별칭 없음',
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppTheme.ink,
                     fontSize: 26,
                     fontWeight: FontWeight.w900,
                     height: 1.1,
@@ -47,9 +49,7 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: 8),
                 Text(
                   '답장 추천은 이 기준을 기본값으로 사용합니다.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: const Color(0xFFF6EDEE),
-                      ),
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
             ),

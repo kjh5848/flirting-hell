@@ -7,12 +7,16 @@ class FadeInUp extends StatefulWidget {
   const FadeInUp({
     required this.child,
     this.duration = const Duration(milliseconds: 320),
+    this.delay = Duration.zero,
     this.offset = 12,
     super.key,
   });
 
   final Widget child;
   final Duration duration;
+
+  /// 스태거용 시작 지연. 작게(≤200ms) 쓰는 것을 권장한다.
+  final Duration delay;
   final double offset;
 
   @override
@@ -23,7 +27,19 @@ class _FadeInUpState extends State<FadeInUp> with SingleTickerProviderStateMixin
   late final AnimationController _controller = AnimationController(
     vsync: this,
     duration: widget.duration,
-  )..forward();
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.delay == Duration.zero) {
+      _controller.forward();
+    } else {
+      Future<void>.delayed(widget.delay, () {
+        if (mounted) _controller.forward();
+      });
+    }
+  }
 
   late final Animation<double> _curve = CurvedAnimation(
     parent: _controller,

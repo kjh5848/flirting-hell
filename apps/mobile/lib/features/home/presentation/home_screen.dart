@@ -69,7 +69,9 @@ class HomeScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 16),
-        bootstrapAsync.when(
+        FadeInUp(
+          delay: const Duration(milliseconds: 90),
+          child: bootstrapAsync.when(
           data: (snapshot) {
             final rooms = snapshot?.recentRooms ?? const [];
             if (rooms.isEmpty) {
@@ -140,7 +142,7 @@ class HomeScreen extends ConsumerWidget {
             title: '내 정보를 불러오는 중',
             body: '사용자 설정, 분석권, 최근 상담방을 확인하고 있습니다.',
           ),
-        ),
+        )),
       ],
     );
   }

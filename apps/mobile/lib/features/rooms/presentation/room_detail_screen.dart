@@ -161,10 +161,16 @@ class _RoomProfileCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Text(
-            room.currentConcern ?? '아직 입력된 고민이 없어요',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
+          if (room.currentConcern != null)
+            Text(
+              room.currentConcern!,
+              style: Theme.of(context).textTheme.titleLarge,
+            )
+          else
+            Text(
+              '아직 고민을 안 적었어도 괜찮아요. 바로 대화를 붙여넣어 보세요.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           if (room.cautionNotes != null) ...[
             const SizedBox(height: 10),
             Text(
