@@ -9,6 +9,8 @@
   ],
   "scripts": {
     "dev:web": "npm --workspace @flirting-hell/web run dev",
+    "dev:admin": "npm --workspace @flirting-hell/admin run dev",
+    "build:admin": "npm --workspace @flirting-hell/admin run build",
     "dev:api": "npm --workspace @flirting-hell/api run dev",
     "dev:backend": "cd apps/backend && ./gradlew bootRun",
     "dev:backend:local": "cd apps/backend && SPRING_PROFILES_ACTIVE=local ./gradlew bootRun",

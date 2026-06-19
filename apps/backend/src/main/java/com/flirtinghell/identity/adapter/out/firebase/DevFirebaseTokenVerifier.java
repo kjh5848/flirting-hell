@@ -18,6 +18,9 @@ class DevFirebaseTokenVerifier implements FirebaseTokenVerifier {
 			throw new BadCredentialsException("Invalid development Firebase token.");
 		}
 
-		return new AuthenticatedUser(token.substring(DEV_TOKEN_PREFIX.length()));
+		String uid = token.substring(DEV_TOKEN_PREFIX.length());
+		// dev 편의: uid가 admin으로 시작하면 어드민 권한을 준다(예: dev:admin-1).
+		boolean admin = uid.startsWith("admin");
+		return new AuthenticatedUser(uid, admin);
 	}
 }

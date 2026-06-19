@@ -1,6 +1,7 @@
 package com.flirtinghell.shared.security;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.flirtinghell.identity.application.port.out.FirebaseTokenVerifier;
@@ -45,10 +46,15 @@ class FirebaseAuthenticationFilter extends OncePerRequestFilter {
 				response.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid bearer token.");
 				return;
 			}
+			List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+			if (user.admin()) {
+				authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+			}
 			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 					user,
 					token,
-					List.of(new SimpleGrantedAuthority("ROLE_USER"))
+					authorities
 			);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 		}

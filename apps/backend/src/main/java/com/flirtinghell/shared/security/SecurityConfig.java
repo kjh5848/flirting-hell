@@ -35,6 +35,7 @@ public class SecurityConfig {
 							.requestMatchers(HttpMethod.GET, "/api/health", "/actuator/health/**").permitAll()
 							.requestMatchers(HttpMethod.GET, "/actuator/info").permitAll()
 							.requestMatchers(HttpMethod.POST, "/api/auth/kakao/exchange").permitAll()
+							.requestMatchers("/api/admin/**").hasRole("ADMIN")
 							.anyRequest().authenticated()
 					)
 				.build();
