@@ -1,6 +1,7 @@
 package com.flirtinghell.analysis.adapter.out.persistence;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.flirtinghell.analysis.domain.model.AnalysisTurn;
 import com.flirtinghell.analysis.domain.repository.AnalysisTurnRepository;
@@ -25,6 +26,20 @@ class JpaAnalysisTurnRepository implements AnalysisTurnRepository {
 	@Override
 	public List<AnalysisTurn> findRecentByRoomIdAndUserId(String roomId, String userId, int limit) {
 		return repository.findTop20ByRoomIdAndUserIdOrderByCreatedAtDesc(roomId, userId)
+				.stream()
+				.limit(limit)
+				.map(JpaAnalysisTurnEntity::toDomain)
+				.toList();
+	}
+
+	@Override
+	public Optional<AnalysisTurn> findByIdAndUserId(String turnId, String userId) {
+		return repository.findByIdAndUserId(turnId, userId).map(JpaAnalysisTurnEntity::toDomain);
+	}
+
+	@Override
+	public List<AnalysisTurn> findSavedByUserId(String userId, int limit) {
+		return repository.findTop50ByUserIdAndSavedIsTrueOrderByCreatedAtDesc(userId)
 				.stream()
 				.limit(limit)
 				.map(JpaAnalysisTurnEntity::toDomain)

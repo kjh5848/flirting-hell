@@ -70,6 +70,32 @@ class RoomsApi {
     return reply;
   }
 
+  /// 분석 답장의 저장(북마크) 상태를 토글한다.
+  Future<AnalysisTurn> toggleSaveAnalysis(String roomId, String turnId) async {
+    final response = await _dio.patch<Map<String, dynamic>>(
+      '/rooms/$roomId/analyses/$turnId/save',
+    );
+    final data = _responseData(response);
+    final turn = data['turn'];
+    if (turn is! Map<String, dynamic>) {
+      throw StateError('Toggle save response data is invalid.');
+    }
+    return AnalysisTurn.fromJson(turn);
+  }
+
+  /// 저장한 답장 목록(상대별).
+  Future<List<SavedReply>> fetchSavedReplies() async {
+    final response = await _dio.get<Map<String, dynamic>>('/me/saved-replies');
+    final data = _responseData(response);
+    final items = data['items'];
+    if (items is! List) {
+      throw StateError('Saved replies response data is invalid.');
+    }
+    return items
+        .map((item) => SavedReply.fromJson(item as Map<String, dynamic>))
+        .toList(growable: false);
+  }
+
   /// 데이트 플랜을 받는다(비영속). 코스 + 궁합 확인 포인트.
   Future<DatePlan> fetchPlan(String roomId) async {
     final response = await _dio.get<Map<String, dynamic>>('/rooms/$roomId/plan');

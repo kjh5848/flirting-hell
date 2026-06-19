@@ -83,6 +83,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                   turn: turn,
                   idealAxes: idealAxes,
                   roomId: widget.roomId,
+                  onToggleSave: () => _toggleSave(turn.turnId),
                 ),
               ),
               const SizedBox(height: 12),
@@ -133,6 +134,19 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
     } finally {
       if (mounted) {
         setState(() => _isSubmitting = false);
+      }
+    }
+  }
+
+  Future<void> _toggleSave(String turnId) async {
+    try {
+      await ref.read(roomsApiProvider).toggleSaveAnalysis(widget.roomId, turnId);
+      ref.invalidate(roomDetailProvider(widget.roomId));
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('저장 상태를 바꾸지 못했어요.')),
+        );
       }
     }
   }
@@ -370,11 +384,13 @@ class _AnalysisTurnCard extends StatelessWidget {
   const _AnalysisTurnCard({
     required this.turn,
     required this.roomId,
+    required this.onToggleSave,
     this.idealAxes,
   });
 
   final AnalysisTurn turn;
   final String roomId;
+  final VoidCallback onToggleSave;
 
   /// 내 이상형 5축. 설정돼 있으면 상대 유형과의 적합도를 계산한다.
   final Map<String, int>? idealAxes;
@@ -388,14 +404,34 @@ class _AnalysisTurnCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AppStatusChip(label: _sourceTypeLabel(turn.sourceType)),
-              AppStatusChip(
-                label: _strategyLabel(turn.recommendedStrategyId),
-                tone: AppStatusChipTone.warning,
+              Expanded(
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    AppStatusChip(label: _sourceTypeLabel(turn.sourceType)),
+                    AppStatusChip(
+                      label: _strategyLabel(turn.recommendedStrategyId),
+                      tone: AppStatusChipTone.warning,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Pressable(
+                onTap: onToggleSave,
+                child: Icon(
+                  turn.saved
+                      ? Icons.bookmark_rounded
+                      : Icons.bookmark_border_rounded,
+                  color: turn.saved
+                      ? const Color(0xFFC65F77)
+                      : const Color(0xFF9C8990),
+                  size: 24,
+                ),
               ),
             ],
           ),

@@ -2,6 +2,7 @@ package com.flirtinghell.analysis.adapter.out.persistence;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -27,6 +28,24 @@ class InMemoryAnalysisTurnRepository implements AnalysisTurnRepository {
 		return turnsById.values().stream()
 				.filter(turn -> turn.roomId().equals(roomId))
 				.filter(turn -> turn.userId().equals(userId))
+				.sorted(Comparator.comparing(AnalysisTurn::createdAt).reversed())
+				.limit(limit)
+				.toList();
+	}
+
+	@Override
+	public Optional<AnalysisTurn> findByIdAndUserId(String turnId, String userId) {
+		return turnsById.values().stream()
+				.filter(turn -> turn.id().equals(turnId))
+				.filter(turn -> turn.userId().equals(userId))
+				.findFirst();
+	}
+
+	@Override
+	public List<AnalysisTurn> findSavedByUserId(String userId, int limit) {
+		return turnsById.values().stream()
+				.filter(turn -> turn.userId().equals(userId))
+				.filter(AnalysisTurn::saved)
 				.sorted(Comparator.comparing(AnalysisTurn::createdAt).reversed())
 				.limit(limit)
 				.toList();

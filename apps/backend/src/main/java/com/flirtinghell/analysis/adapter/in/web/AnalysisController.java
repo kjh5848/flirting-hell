@@ -13,6 +13,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,6 +57,21 @@ public class AnalysisController {
 	}
 
 	public record CreateAnalysisResponse(AnalysisService.AnalysisTurnResult turn) {
+	}
+
+	@PatchMapping("/{turnId}/save")
+	ApiResponse<CreateAnalysisResponse> toggleSaved(
+			@AuthenticationPrincipal AuthenticatedUser user,
+			@PathVariable String roomId,
+			@PathVariable String turnId,
+			HttpServletRequest request
+	) {
+		AnalysisService.AnalysisTurnResult turn = analysisService.toggleSaved(
+				user.firebaseUid(),
+				roomId,
+				turnId
+		);
+		return ApiResponse.of(new CreateAnalysisResponse(turn), RequestIds.from(request));
 	}
 
 	@PostMapping("/refine")

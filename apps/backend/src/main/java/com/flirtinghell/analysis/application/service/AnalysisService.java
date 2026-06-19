@@ -183,8 +183,39 @@ public class AnalysisService {
 				draft.replyReason(),
 				draft.nextAction(),
 				draft.partnerType(),
+				false,
 				now
 		);
+	}
+
+	public AnalysisTurnResult toggleSaved(String firebaseUid, String roomId, String turnId) {
+		String userId = userBootstrapService.bootstrap(firebaseUid).user().userId();
+		AnalysisTurn turn = analysisTurnRepository.findByIdAndUserId(turnId, userId)
+				.filter(found -> found.roomId().equals(roomId))
+				.orElseThrow(() -> new ResourceNotFoundException("TURN_NOT_FOUND", "분석을 찾을 수 없습니다."));
+		AnalysisTurn updated = analysisTurnRepository.save(turn.markSaved(!turn.saved()));
+		return AnalysisTurnResult.from(updated);
+	}
+
+	public List<SavedReplyResult> listSavedReplies(String firebaseUid) {
+		String userId = userBootstrapService.bootstrap(firebaseUid).user().userId();
+		return analysisTurnRepository.findSavedByUserId(userId, 50).stream()
+				.map(turn -> {
+					String alias = consultationRoomRepository
+							.findByIdAndUserId(turn.roomId(), userId)
+							.map(ConsultationRoom::alias)
+							.orElse("상담방");
+					return new SavedReplyResult(
+							turn.id(),
+							turn.roomId(),
+							alias,
+							turn.summary(),
+							turn.primaryReply(),
+							turn.recommendedStrategyId(),
+							turn.createdAt()
+					);
+				})
+				.toList();
 	}
 
 	public record CreateAnalysisCommand(
@@ -224,6 +255,7 @@ public class AnalysisService {
 			String replyReason,
 			String nextAction,
 			String partnerType,
+			boolean saved,
 			Instant createdAt
 	) {
 		public static AnalysisTurnResult from(AnalysisTurn turn) {
@@ -240,8 +272,20 @@ public class AnalysisService {
 					turn.replyReason(),
 					turn.nextAction(),
 					turn.partnerType(),
+					turn.saved(),
 					turn.createdAt()
 			);
 		}
+	}
+
+	public record SavedReplyResult(
+			String turnId,
+			String roomId,
+			String roomAlias,
+			String summary,
+			String primaryReply,
+			StrategyId recommendedStrategyId,
+			Instant createdAt
+	) {
 	}
 }

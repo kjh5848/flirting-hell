@@ -86,6 +86,7 @@ class AnalysisTurn {
     required this.nextAction,
     required this.createdAt,
     this.partnerType,
+    this.saved = false,
   });
 
   factory AnalysisTurn.fromJson(Map<String, dynamic> json) {
@@ -103,6 +104,7 @@ class AnalysisTurn {
       nextAction: json['nextAction'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
       partnerType: json['partnerType'] as String?,
+      saved: json['saved'] as bool? ?? false,
     );
   }
 
@@ -121,6 +123,39 @@ class AnalysisTurn {
 
   /// 상대 5축 성향 추론(JSON 문자열, nullable). UI가 PartnerType으로 파싱한다.
   final String? partnerType;
+
+  /// 사용자가 저장(북마크)한 답장인지.
+  final bool saved;
+}
+
+/// 저장 탭에 보이는 저장된 답장(상대별).
+class SavedReply {
+  const SavedReply({
+    required this.turnId,
+    required this.roomId,
+    required this.roomAlias,
+    required this.summary,
+    required this.primaryReply,
+    required this.recommendedStrategyId,
+  });
+
+  factory SavedReply.fromJson(Map<String, dynamic> json) {
+    return SavedReply(
+      turnId: json['turnId'] as String,
+      roomId: json['roomId'] as String,
+      roomAlias: json['roomAlias'] as String,
+      summary: json['summary'] as String,
+      primaryReply: json['primaryReply'] as String,
+      recommendedStrategyId: json['recommendedStrategyId'] as String,
+    );
+  }
+
+  final String turnId;
+  final String roomId;
+  final String roomAlias;
+  final String summary;
+  final String primaryReply;
+  final String recommendedStrategyId;
 }
 
 class Room {
