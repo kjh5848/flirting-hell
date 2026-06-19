@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/widgets/app_status_chip.dart';
+import '../../../core/widgets/fade_in_up.dart';
 import '../../../core/widgets/pressable.dart';
 import '../../../core/widgets/screen_frame.dart';
 import '../../../core/widgets/section_card.dart';
@@ -77,10 +78,12 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
             const _EmptyHistoryCard()
           else
             for (final turn in detail.recentTurns) ...[
-              _AnalysisTurnCard(
-                turn: turn,
-                idealAxes: idealAxes,
-                roomId: widget.roomId,
+              FadeInUp(
+                child: _AnalysisTurnCard(
+                  turn: turn,
+                  idealAxes: idealAxes,
+                  roomId: widget.roomId,
+                ),
               ),
               const SizedBox(height: 12),
             ],
@@ -609,7 +612,7 @@ class _PrimaryReplyCardState extends ConsumerState<_PrimaryReplyCard> {
                   ),
                 )
               else if (_refined != null)
-                GestureDetector(
+                Pressable(
                   onTap: () => setState(() => _refined = null),
                   child: const Text(
                     '원래대로',
