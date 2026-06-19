@@ -43,4 +43,27 @@ class AdminControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.data.users[0].userId").exists());
 	}
+
+	@Test
+	void moderationFlagsSeededUnsafeOutputs() throws Exception {
+		mockMvc.perform(get("/api/admin/moderation")
+						.header("Authorization", "Bearer dev:admin-1"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data.flags[0].rules[0]").exists());
+	}
+
+	@Test
+	void moderationRequiresAdmin() throws Exception {
+		mockMvc.perform(get("/api/admin/moderation")
+						.header("Authorization", "Bearer dev:user-1"))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	void llmStatusReturnsProvider() throws Exception {
+		mockMvc.perform(get("/api/admin/llm")
+						.header("Authorization", "Bearer dev:admin-1"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data.provider").exists());
+	}
 }

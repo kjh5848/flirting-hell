@@ -3,7 +3,12 @@ import { useEffect, useState } from "react";
 import {
   AdminMetrics,
   AdminUser,
+  LlmStatus,
+  ModerationFlag,
+  RULE_LABELS,
+  fetchLlm,
   fetchMetrics,
+  fetchModeration,
   fetchUsers,
 } from "./api";
 
@@ -17,7 +22,7 @@ const COLORS = {
   border: "#EFE0E3",
 };
 
-type View = "dashboard" | "users";
+type View = "dashboard" | "users" | "moderation" | "llm";
 
 export function App() {
   const [view, setView] = useState<View>("dashboard");
@@ -35,7 +40,10 @@ export function App() {
     >
       <Sidebar view={view} onSelect={setView} />
       <main style={{ flex: 1, padding: "32px 40px", maxWidth: 980 }}>
-        {view === "dashboard" ? <Dashboard /> : <Users />}
+        {view === "dashboard" && <Dashboard />}
+        {view === "users" && <Users />}
+        {view === "moderation" && <Moderation />}
+        {view === "llm" && <Llm />}
       </main>
     </div>
   );
@@ -51,6 +59,8 @@ function Sidebar({
   const items: { key: View; label: string }[] = [
     { key: "dashboard", label: "대시보드" },
     { key: "users", label: "사용자" },
+    { key: "moderation", label: "안전" },
+    { key: "llm", label: "LLM 운영" },
   ];
   return (
     <aside
@@ -173,6 +183,83 @@ function Users() {
             ))}
           </tbody>
         </table>
+      </Card>
+    </div>
+  );
+}
+
+function Moderation() {
+  const { data, error } = useAsync<ModerationFlag[]>(fetchModeration);
+  if (error) return <ErrorBox message={error} />;
+  if (!data) return <Loading />;
+  return (
+    <div>
+      <Header
+        title="안전"
+        subtitle="생성된 추천 답장만 검사 (원문 대화 미검사). 휴리스틱 신호 — 진짜 판정은 실 LLM 단계."
+      />
+      {data.length === 0 ? (
+        <Card>
+          <p style={{ color: COLORS.sub, fontSize: 14 }}>플래그된 출력이 없어요.</p>
+        </Card>
+      ) : (
+        data.map((flag) => (
+          <div key={flag.source} style={{ marginBottom: 10 }}>
+            <Card>
+              <div style={{ display: "flex", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
+                {flag.rules.map((r) => (
+                  <span
+                    key={r}
+                    style={{
+                      background: COLORS.blush,
+                      color: COLORS.accent,
+                      fontSize: 12,
+                      fontWeight: 700,
+                      padding: "3px 10px",
+                      borderRadius: 999,
+                    }}
+                  >
+                    {RULE_LABELS[r] ?? r}
+                  </span>
+                ))}
+                <span style={{ color: COLORS.sub, fontSize: 12, alignSelf: "center" }}>
+                  {flag.source}
+                </span>
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>"{flag.generatedText}"</div>
+            </Card>
+          </div>
+        ))
+      )}
+    </div>
+  );
+}
+
+function Llm() {
+  const { data, error } = useAsync<LlmStatus>(fetchLlm);
+  if (error) return <ErrorBox message={error} />;
+  if (!data) return <Loading />;
+  return (
+    <div>
+      <Header title="LLM 운영" subtitle="provider 현황 · 품질 · 비용" />
+      <Card title="현재 provider">
+        <div style={{ fontSize: 22, fontWeight: 900, color: COLORS.accent }}>
+          {data.provider}
+        </div>
+      </Card>
+      <div style={{ height: 14 }} />
+      <Card title="품질 요약">
+        {data.quality.map((q) => (
+          <div key={q.target} style={{ padding: "8px 0" }}>
+            <div style={{ fontSize: 14, fontWeight: 700 }}>{q.target}</div>
+            <div style={{ color: COLORS.sub, fontSize: 13 }}>{q.note}</div>
+          </div>
+        ))}
+      </Card>
+      <div style={{ height: 14 }} />
+      <Card title="비용(추정)">
+        <Row label="월 추정(₩)" value={data.cost.monthlyKrw} />
+        <p style={{ color: COLORS.sub, fontSize: 12, marginTop: 6 }}>{data.cost.note}</p>
       </Card>
     </div>
   );

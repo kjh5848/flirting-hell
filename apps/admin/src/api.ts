@@ -41,6 +41,32 @@ export interface AdminUser {
   joinedAt: string;
 }
 
+export interface ModerationFlag {
+  source: string;
+  generatedText: string;
+  rules: string[];
+}
+
+export interface QualityRow {
+  target: string;
+  note: string;
+}
+
+export interface LlmStatus {
+  provider: string;
+  quality: QualityRow[];
+  cost: { monthlyKrw: number; note: string };
+}
+
 export const fetchMetrics = () => apiGet<AdminMetrics>("/admin/metrics");
 export const fetchUsers = () =>
   apiGet<{ users: AdminUser[] }>("/admin/users").then((d) => d.users);
+export const fetchModeration = () =>
+  apiGet<{ flags: ModerationFlag[] }>("/admin/moderation").then((d) => d.flags);
+export const fetchLlm = () => apiGet<LlmStatus>("/admin/llm");
+
+export const RULE_LABELS: Record<string, string> = {
+  PRESSURE: "압박·재촉",
+  GUILT: "죄책감 유발",
+  OBSESSION: "집착·통제",
+};
