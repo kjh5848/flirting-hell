@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/widgets/typing_dots.dart';
 import '../../../data/remote/rooms_api.dart';
 
 /// 상담방 안에서 코치와 나누는 대화. 메시지는 세션 동안만 클라이언트에 유지하고
@@ -93,9 +94,11 @@ class _CoachChatScreenState extends ConsumerState<CoachChatScreen> {
             ),
             if (_sending)
               const Padding(
-                padding: EdgeInsets.only(bottom: 8),
-                child: Text('코치가 생각 중…',
-                    style: TextStyle(color: Color(0xFF9B8A8E), fontSize: 12)),
+                padding: EdgeInsets.only(left: 20, bottom: 10),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: TypingDots(),
+                ),
               ),
             _Composer(
               controller: _controller,

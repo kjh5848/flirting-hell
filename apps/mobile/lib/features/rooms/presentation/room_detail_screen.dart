@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/widgets/app_status_chip.dart';
+import '../../../core/widgets/pressable.dart';
 import '../../../core/widgets/screen_frame.dart';
 import '../../../core/widgets/section_card.dart';
 import '../../../data/models/room_models.dart';
@@ -648,11 +649,11 @@ class _PrimaryReplyCardState extends ConsumerState<_PrimaryReplyCard> {
             runSpacing: 8,
             children: [
               for (final (value, label) in _directions)
-                GestureDetector(
+                Pressable(
                   onTap: _loading ? null : () => _refine(value),
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2A2125),
+                      color: const Color(0xFF3A2F34),
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: Padding(
