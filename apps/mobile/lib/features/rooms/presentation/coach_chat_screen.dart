@@ -144,14 +144,14 @@ class _Bubble extends StatelessWidget {
           maxWidth: MediaQuery.of(context).size.width * 0.78,
         ),
         decoration: BoxDecoration(
-          color: isUser ? const Color(0xFFE43F5A) : Colors.white,
+          color: isUser ? const Color(0xFFC65F77) : Colors.white,
           borderRadius: BorderRadius.circular(18),
-          border: isUser ? null : Border.all(color: const Color(0xFFEDE3DF)),
+          border: isUser ? null : Border.all(color: const Color(0xFFEFE0E3)),
         ),
         child: Text(
           message.text,
           style: TextStyle(
-            color: isUser ? Colors.white : const Color(0xFF1D1719),
+            color: isUser ? Colors.white : const Color(0xFF2A2024),
             fontSize: 14,
             height: 1.4,
             fontWeight: FontWeight.w600,

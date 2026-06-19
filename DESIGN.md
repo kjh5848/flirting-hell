@@ -4,22 +4,23 @@
 tokens:
   color:
     background:
-      canvas: "#FFF8F4"
-      app: "#FBF3F0"
+      canvas: "#FFF8F5"
+      app: "#FBF4F1"
       surface: "#FFFFFF"
-      surfaceWarm: "#FFF8F4"
+      surfaceWarm: "#FFF8F5"
       surfaceMuted: "#FFFCFA"
+      hero: "#F4E3E6"      # 블러시 — 홈 히어로/강조 면 (검정 대체)
     text:
-      primary: "#1D1719"
-      secondary: "#76666A"
-      muted: "#9B8A8E"
-      inverse: "#FFF8F4"
+      primary: "#2A2024"
+      secondary: "#6E5C62"
+      muted: "#9C8990"
+      inverse: "#FFF8F5"
     accent:
-      primary: "#E43F5A"
-      primaryHover: "#BE123C"
-      soft: "#FFF1F2"
-      warm: "#FF7A59"
-      ink: "#2A141B"
+      primary: "#C65F77"   # 차분한 뮤트 로즈 (기존 #E43F5A 채도↓)
+      primaryHover: "#A84C61"
+      soft: "#F7EAED"
+      warm: "#E0795B"
+      ink: "#2A2024"
     semantic:
       success: "#047857"
       successBg: "#ECFDF5"
@@ -113,10 +114,11 @@ tokens:
 
 ## Color
 
-- **Approach:** Restrained. rose accent 1개, warm background, dark ink를 중심으로 한다.
-- **Primary:** `#E43F5A` — 핵심 CTA, 선택된 진행 단계, 추천 답장 강조에만 사용한다.
-- **Secondary:** `#FF7A59` — 따뜻한 보조 강조에 제한적으로 사용한다.
-- **Neutrals:** `#FBF3F0`, `#FFF8F4`, `#FFFFFF`, `#76666A`, `#1D1719` — 따뜻한 앱 표면과 본문 대비.
+- **Approach:** Restrained + calm. 차분한 뮤트 로즈 1개, warm background, warm ink를 중심으로 한다. 타깃 유저(연애 초보·불안)의 심미적 부담을 낮추는 게 1차 기준이다 — 핫핑크·강한 검정 대비를 피한다.
+- **Primary:** `#C65F77` (차분한 로즈) — 핵심 CTA, 선택 상태, 추천 답장 강조에만 사용한다. (기존 `#E43F5A`에서 채도를 낮춤)
+- **Secondary:** `#E0795B` (뮤트 코랄) — 따뜻한 보조 강조에 제한적으로 사용한다.
+- **Hero surface:** `#F4E3E6` (블러시) — 홈 히어로 등 강조 면을 검정 대신 부드러운 블러시로 둔다.
+- **Neutrals:** `#FBF4F1`, `#FFF8F5`, `#FFFFFF`, `#6E5C62`, `#2A2024` — 따뜻한 앱 표면과 본문 대비.
 - **Semantic:** success `#047857`, warning `#B45309`, error `#BE123C`, info `#2563EB`.
 - **Dark mode:** V1에서는 만들지 않는다. 나중에 추가할 때는 단순 반전이 아니라 surface와 accent 채도를 별도로 낮춘다.
 
@@ -181,3 +183,6 @@ tokens:
 | 2026-05-13 | Flutter app UI direction applied | 웹 대시보드 구조를 줄이고 Flutter 앱의 홈/상담방/저장/내 정보/분석권 탭 흐름으로 화면 밀도를 맞춘다. |
 | 2026-06-16 | Bottom nav reduced to 4 tabs | 목업 하단바와 통일. 분석권 탭을 제거하고 홈 상단 잔여량 칩과 내 정보 화면에서 진입하게 해 결제 노출을 낮춘다. |
 | 2026-06-16 | Splash aligned to mockup 00 | 중앙 정렬 타이틀, rose accent 원형 심볼, 하단 풀폭 CTA로 목업 00과 일치시킨다. |
+| 2026-06-19 | Calm rose 색상 리디자인 | 타깃 유저의 심미적 부담을 낮추려 핫핑크(#E43F5A)→뮤트 로즈(#C65F77), 잉크 따뜻하게(#2A2024), 홈 히어로를 검정→블러시(#F4E3E6)로. |
+| 2026-06-19 | 홈 히어로 reframe | 기계적인 "새 분석 시작"→감정 중심 "이 사람, 나랑 맞을까?" + 따뜻한 카피로 진입 부담을 낮춘다. |
+| 2026-06-19 | Motion 1차 적용 | 진입 화면(상담방 상세/코치/플랜)에 fade+slide 전환, 홈 히어로 FadeInUp, 로딩 인디케이터 accent화. |

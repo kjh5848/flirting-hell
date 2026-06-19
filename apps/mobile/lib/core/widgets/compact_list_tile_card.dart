@@ -101,7 +101,7 @@ class _LeadingBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF1F2),
+        color: const Color(0xFFF7EAED),
         borderRadius: BorderRadius.circular(15),
       ),
       child: SizedBox(

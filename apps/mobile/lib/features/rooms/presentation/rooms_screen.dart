@@ -199,7 +199,7 @@ class _CreateRoomSheetState extends ConsumerState<_CreateRoomSheet> {
                 Center(
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEDE3DF),
+                      color: const Color(0xFFEFE0E3),
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: const SizedBox(width: 86, height: 4),

@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const _background = Color(0xFFFBF3F0);
+  static const _background = Color(0xFFFBF4F1);
   static const _surface = Color(0xFFFFFFFF);
-  static const _surfaceSoft = Color(0xFFFFF8F4);
-  static const _textPrimary = Color(0xFF1D1719);
-  static const _textSecondary = Color(0xFF76666A);
-  static const _accent = Color(0xFFE43F5A);
-  static const _border = Color(0xFFEDE3DF);
+  static const _surfaceSoft = Color(0xFFFFF8F5);
+  static const _textPrimary = Color(0xFF2A2024);
+  static const _textSecondary = Color(0xFF6E5C62);
+  static const _accent = Color(0xFFC65F77);
+  static const _border = Color(0xFFEFE0E3);
+
+  /// 화면에서 재사용하는 공개 토큰 (차분한 로즈 방향).
+  static const accent = _accent;
+  static const ink = _textPrimary;
+  static const heroSurface = Color(0xFFF4E3E6); // 블러시 — 히어로/강조 면
+  static const heroBorder = Color(0xFFF0DCE0);
+  static const textSecondary = _textSecondary;
 
   static ThemeData get light {
     final colorScheme = ColorScheme.fromSeed(
@@ -23,6 +30,9 @@ class AppTheme {
       colorScheme: colorScheme,
       scaffoldBackgroundColor: _background,
       fontFamily: 'Pretendard',
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: _accent,
+      ),
       appBarTheme: const AppBarTheme(
         centerTitle: false,
         elevation: 0,
@@ -87,7 +97,7 @@ class AppTheme {
         ),
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: const Color(0xFFFFF1F2),
+        backgroundColor: const Color(0xFFF7EAED),
         selectedColor: _accent,
         disabledColor: _surfaceSoft,
         side: BorderSide.none,

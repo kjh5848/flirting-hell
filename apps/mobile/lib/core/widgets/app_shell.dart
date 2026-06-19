@@ -37,7 +37,7 @@ class AppShell extends StatelessWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(26),
-              border: Border.all(color: const Color(0xFFEDE3DF)),
+              border: Border.all(color: const Color(0xFFEFE0E3)),
               boxShadow: [
                 BoxShadow(
                   color: const Color(0xFF2A141B).withOpacity(0.07),

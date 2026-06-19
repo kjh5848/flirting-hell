@@ -90,7 +90,7 @@ class _StepCard extends StatelessWidget {
         children: [
           DecoratedBox(
             decoration: BoxDecoration(
-              color: const Color(0xFFFFF1F2),
+              color: const Color(0xFFF7EAED),
               borderRadius: BorderRadius.circular(12),
             ),
             child: SizedBox(
@@ -161,7 +161,7 @@ class _ListCard extends StatelessWidget {
               children: [
                 const Padding(
                   padding: EdgeInsets.only(top: 7, right: 8),
-                  child: Icon(Icons.circle, size: 5, color: Color(0xFFE43F5A)),
+                  child: Icon(Icons.circle, size: 5, color: Color(0xFFC65F77)),
                 ),
                 Expanded(
                   child: Text(item,

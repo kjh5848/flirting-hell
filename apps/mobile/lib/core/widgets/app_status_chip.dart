@@ -46,8 +46,8 @@ class AppStatusChip extends StatelessWidget {
 ({Color background, Color foreground}) _colors(AppStatusChipTone tone) {
   return switch (tone) {
     AppStatusChipTone.accent => (
-        background: const Color(0xFFFFF1F2),
-        foreground: const Color(0xFFE43F5A),
+        background: const Color(0xFFF7EAED),
+        foreground: const Color(0xFFC65F77),
       ),
     AppStatusChipTone.warm => (
         background: const Color(0xFFFFF7ED),
@@ -63,7 +63,7 @@ class AppStatusChip extends StatelessWidget {
       ),
     AppStatusChipTone.neutral => (
         background: const Color(0xFFFFF8F4),
-        foreground: const Color(0xFF76666A),
+        foreground: const Color(0xFF6E5C62),
       ),
   };
 }

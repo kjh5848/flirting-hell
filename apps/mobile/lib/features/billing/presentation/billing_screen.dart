@@ -28,7 +28,7 @@ class BillingScreen extends ConsumerWidget {
             ),
       children: [
         SectionCard(
-          backgroundColor: const Color(0xFFFFF1F2),
+          backgroundColor: const Color(0xFFF7EAED),
           borderColor: const Color(0xFFFFE0E4),
           radius: 26,
           child: Column(
@@ -39,7 +39,7 @@ class BillingScreen extends ConsumerWidget {
               Text(
                 freeRemaining == null ? '— 회 남음' : '$freeRemaining회 남음',
                 style: const TextStyle(
-                  color: Color(0xFFE43F5A),
+                  color: Color(0xFFC65F77),
                   fontSize: 34,
                   fontWeight: FontWeight.w900,
                   height: 1,

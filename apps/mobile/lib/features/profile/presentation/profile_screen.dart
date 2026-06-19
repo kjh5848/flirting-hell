@@ -24,7 +24,7 @@ class ProfileScreen extends ConsumerWidget {
       children: [
         DecoratedBox(
           decoration: BoxDecoration(
-            color: const Color(0xFF1D1719),
+            color: const Color(0xFF2A2024),
             borderRadius: BorderRadius.circular(26),
           ),
           child: Padding(
@@ -252,7 +252,7 @@ class _ProfileEditSheetState extends State<_ProfileEditSheet> {
             Center(
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEDE3DF),
+                  color: const Color(0xFFEFE0E3),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: const SizedBox(width: 86, height: 4),

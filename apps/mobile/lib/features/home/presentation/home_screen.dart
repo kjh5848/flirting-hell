@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_status_chip.dart';
 import '../../../core/widgets/compact_list_tile_card.dart';
+import '../../../core/widgets/fade_in_up.dart';
 import '../../../core/widgets/screen_frame.dart';
 import '../../../core/widgets/section_card.dart';
 import '../application/bootstrap_provider.dart';
@@ -20,7 +22,7 @@ class HomeScreen extends ConsumerWidget {
 
     return ScreenFrame(
       title: '플러팅지옥',
-      subtitle: '$nickname님, 상대방과 나눈 대화나 지금 처한 상황을 정리하고 다음 답장과 전략을 고르세요.',
+      subtitle: '$nickname님, 천천히 같이 정리해봐요.',
       trailing: freeRemaining == null
           ? null
           : InkWell(
@@ -32,41 +34,38 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
       children: [
-        SectionCard(
-          backgroundColor: const Color(0xFF1D1719),
-          borderColor: const Color(0xFF1D1719),
-          radius: 28,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const AppStatusChip(label: '대화 붙여넣기'),
-              const SizedBox(height: 10),
-              const Text(
-                '새 분석 시작',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w900,
-                  height: 1.08,
-                  letterSpacing: -1,
+        FadeInUp(
+          child: SectionCard(
+            backgroundColor: AppTheme.heroSurface,
+            borderColor: AppTheme.heroBorder,
+            radius: 28,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AppStatusChip(label: '오늘의 대화'),
+                const SizedBox(height: 10),
+                Text(
+                  '이 사람,\n나랑 맞을까?',
+                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                        fontSize: 30,
+                        height: 1.12,
+                      ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                '전략을 먼저 고르지 않습니다. 상담방을 고르고 대화나 상황을 붙여넣으면 흐름을 요약한 뒤 필요한 전략을 제안합니다.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: const Color(0xFFF6EDEE),
-                    ),
-              ),
-              const SizedBox(height: 18),
-              FilledButton(
-                onPressed: () => context.go('/rooms'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFFE43F5A),
+                const SizedBox(height: 12),
+                Text(
+                  '나눈 대화를 보여주면 상대 유형과 나와의 궁합을 같이 봐드려요. 답장도 내 말투로 골라드릴게요.',
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                child: const Text('상담방에서 시작'),
-              ),
-            ],
+                const SizedBox(height: 18),
+                FilledButton(
+                  onPressed: () => context.go('/rooms'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppTheme.accent,
+                  ),
+                  child: const Text('대화 가져와서 확인하기'),
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 16),

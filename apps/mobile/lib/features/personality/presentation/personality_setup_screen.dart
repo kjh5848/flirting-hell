@@ -244,7 +244,7 @@ class _CompatibilityPreviewCard extends StatelessWidget {
               Text(
                 '${compatibility.score}%',
                 style: const TextStyle(
-                  color: Color(0xFFE43F5A),
+                  color: Color(0xFFC65F77),
                   fontSize: 30,
                   fontWeight: FontWeight.w900,
                   letterSpacing: -1,

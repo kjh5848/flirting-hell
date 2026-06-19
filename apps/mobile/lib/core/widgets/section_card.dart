@@ -6,7 +6,7 @@ class SectionCard extends StatelessWidget {
     this.padding = const EdgeInsets.all(20),
     this.backgroundColor,
     this.radius = 24,
-    this.borderColor = const Color(0xFFEDE3DF),
+    this.borderColor = const Color(0xFFEFE0E3),
     super.key,
   });
 

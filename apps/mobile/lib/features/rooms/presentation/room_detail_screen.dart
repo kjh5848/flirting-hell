@@ -276,7 +276,7 @@ class _CoachEntryCard extends StatelessWidget {
         backgroundColor: const Color(0xFFFFF8F4),
         child: Row(
           children: [
-            const Icon(Icons.forum_rounded, color: Color(0xFFE43F5A)),
+            const Icon(Icons.forum_rounded, color: Color(0xFFC65F77)),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -321,7 +321,7 @@ class _ActionEntryCard extends StatelessWidget {
         backgroundColor: const Color(0xFFFFF8F4),
         child: Row(
           children: [
-            Icon(icon, color: const Color(0xFFE43F5A)),
+            Icon(icon, color: const Color(0xFFC65F77)),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -583,8 +583,8 @@ class _PrimaryReplyCardState extends ConsumerState<_PrimaryReplyCard> {
   Widget build(BuildContext context) {
     final shown = _refined ?? widget.reply;
     return SectionCard(
-      backgroundColor: const Color(0xFF1D1719),
-      borderColor: const Color(0xFF1D1719),
+      backgroundColor: const Color(0xFF2A2024),
+      borderColor: const Color(0xFF2A2024),
       radius: 22,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -52,14 +53,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/rooms/:roomId/coach',
-        builder: (context, state) => CoachChatScreen(
-          roomId: state.pathParameters['roomId']!,
+        pageBuilder: (context, state) => _fadeSlidePage(
+          CoachChatScreen(roomId: state.pathParameters['roomId']!),
         ),
       ),
       GoRoute(
         path: '/rooms/:roomId/plan',
-        builder: (context, state) => DatePlanScreen(
-          roomId: state.pathParameters['roomId']!,
+        pageBuilder: (context, state) => _fadeSlidePage(
+          DatePlanScreen(roomId: state.pathParameters['roomId']!),
         ),
       ),
       ShellRoute(
@@ -84,10 +85,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/rooms/:roomId',
-            pageBuilder: (context, state) => NoTransitionPage(
-              child: RoomDetailScreen(
-                roomId: state.pathParameters['roomId']!,
-              ),
+            pageBuilder: (context, state) => _fadeSlidePage(
+              RoomDetailScreen(roomId: state.pathParameters['roomId']!),
             ),
           ),
           GoRoute(
@@ -119,3 +118,28 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
+
+/// 진입 화면용 부드러운 fade + slight slide-up 전환 (DESIGN.md Motion).
+CustomTransitionPage<void> _fadeSlidePage(Widget child) {
+  return CustomTransitionPage<void>(
+    child: child,
+    transitionDuration: const Duration(milliseconds: 280),
+    reverseTransitionDuration: const Duration(milliseconds: 220),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curved = CurvedAnimation(
+        parent: animation,
+        curve: const Cubic(0.16, 1, 0.3, 1),
+      );
+      return FadeTransition(
+        opacity: curved,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, 0.03),
+            end: Offset.zero,
+          ).animate(curved),
+          child: child,
+        ),
+      );
+    },
+  );
+}
