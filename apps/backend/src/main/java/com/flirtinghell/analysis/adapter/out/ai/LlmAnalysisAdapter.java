@@ -76,6 +76,9 @@ class LlmAnalysisAdapter implements AnalysisPort {
 					responseSchema()
 			));
 			LlmAnalysisResponse response = objectMapper.readValue(responseJson, LlmAnalysisResponse.class);
+			String partnerTypeJson = response.partnerType() == null
+					? null
+					: objectMapper.writeValueAsString(response.partnerType());
 			return new AnalysisDraft(
 					response.sourceType(),
 					response.participantSummary(),
@@ -87,8 +90,7 @@ class LlmAnalysisAdapter implements AnalysisPort {
 					response.alternativeReplies(),
 					response.replyReason(),
 					response.nextAction(),
-					// TODO: 실제 LLM 응답 스키마에 partnerType(5축)을 추가해 채운다. 지금은 미추론.
-					null
+					partnerTypeJson
 			);
 		} catch (JsonProcessingException exception) {
 			throw new IllegalStateException("LLM analysis response did not match the expected schema.", exception);
@@ -339,6 +341,33 @@ class LlmAnalysisAdapter implements AnalysisPort {
 	private Map<String, Object> responseSchema() {
 		Map<String, Object> stringField = Map.of("type", "string");
 		Map<String, Object> stringArray = Map.of("type", "array", "items", stringField);
+		Map<String, Object> axisField = Map.of("type", "integer", "minimum", 1, "maximum", 5);
+		Map<String, Object> partnerType = Map.of(
+				"type", "object",
+				"additionalProperties", false,
+				"required", List.of("expression", "pace", "contact", "emotion", "values", "summary"),
+				"properties", Map.of(
+						"expression", axisField,
+						"pace", axisField,
+						"contact", axisField,
+						"emotion", axisField,
+						"values", axisField,
+						"summary", stringField
+				)
+		);
+		Map<String, Object> properties = Map.ofEntries(
+				Map.entry("sourceType", Map.of("type", "string", "enum", enumNames(InputSourceType.values()))),
+				Map.entry("participantSummary", stringField),
+				Map.entry("summary", stringField),
+				Map.entry("currentState", stringField),
+				Map.entry("recommendedStrategyId", Map.of("type", "string", "enum", enumNames(StrategyId.values()))),
+				Map.entry("warnings", stringArray),
+				Map.entry("primaryReply", stringField),
+				Map.entry("alternativeReplies", stringArray),
+				Map.entry("replyReason", stringField),
+				Map.entry("nextAction", stringField),
+				Map.entry("partnerType", partnerType)
+		);
 		return Map.of(
 				"type", "object",
 				"additionalProperties", false,
@@ -352,20 +381,10 @@ class LlmAnalysisAdapter implements AnalysisPort {
 						"primaryReply",
 						"alternativeReplies",
 						"replyReason",
-						"nextAction"
+						"nextAction",
+						"partnerType"
 				),
-				"properties", Map.of(
-						"sourceType", Map.of("type", "string", "enum", enumNames(InputSourceType.values())),
-						"participantSummary", stringField,
-						"summary", stringField,
-						"currentState", stringField,
-						"recommendedStrategyId", Map.of("type", "string", "enum", enumNames(StrategyId.values())),
-						"warnings", stringArray,
-						"primaryReply", stringField,
-						"alternativeReplies", stringArray,
-						"replyReason", stringField,
-						"nextAction", stringField
-				)
+				"properties", properties
 		);
 	}
 
@@ -385,7 +404,19 @@ class LlmAnalysisAdapter implements AnalysisPort {
 			String primaryReply,
 			List<String> alternativeReplies,
 			String replyReason,
-			String nextAction
+			String nextAction,
+			PartnerTypeBody partnerType
+	) {
+	}
+
+	/// 실 LLM이 반환하는 상대 5축 유형. JSON 문자열로 직렬화해 AnalysisDraft.partnerType에 담는다.
+	private record PartnerTypeBody(
+			int expression,
+			int pace,
+			int contact,
+			int emotion,
+			int values,
+			String summary
 	) {
 	}
 }

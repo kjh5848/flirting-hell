@@ -32,7 +32,8 @@ class LlmAnalysisAdapterTest {
 					  "primaryReply": "오 좋다 ㅋㅋ 그럼 오늘은 집에서 충전하는 날이네.",
 					  "alternativeReplies": ["집에서 쉬는 날 좋지 ㅋㅋ", "무리하지 말고 쉬어 ㅋㅋ"],
 					  "replyReason": "상대가 편한 상태를 말했으니 일상 질문이 안전합니다.",
-					  "nextAction": "상대가 답하면 가벼운 선택지로 약속 가능성을 봅니다."
+					  "nextAction": "상대가 답하면 가벼운 선택지로 약속 가능성을 봅니다.",
+					  "partnerType": {"expression": 4, "pace": 2, "contact": 4, "emotion": 3, "values": 3, "summary": "편하게 일상을 공유하는 유형"}
 					}
 					""";
 		};
@@ -56,9 +57,13 @@ class LlmAnalysisAdapterTest {
 		JsonNode schema = objectMapper.valueToTree(prompt.responseSchema());
 		assertThat(prompt.systemInstructions()).contains("스토킹", "성적 압박", "상대의 마음을 단정하지 말고");
 		assertThat(prompt.userPrompt()).contains("상대 별칭: 지우", "나: 오늘 뭐해?");
-		assertThat(schema.path("required")).extracting(JsonNode::asText).contains("primaryReply", "nextAction");
+		assertThat(schema.path("required")).extracting(JsonNode::asText)
+				.contains("primaryReply", "nextAction", "partnerType");
 		assertThat(draft.sourceType()).isEqualTo(InputSourceType.KAKAO);
 		assertThat(draft.recommendedStrategyId()).isEqualTo(StrategyId.MAKE_PLAN);
 		assertThat(draft.primaryReply()).isEqualTo("오 좋다 ㅋㅋ 그럼 오늘은 집에서 충전하는 날이네.");
+		JsonNode partnerType = objectMapper.readTree(draft.partnerType());
+		assertThat(partnerType.path("pace").asInt()).isEqualTo(2);
+		assertThat(partnerType.path("summary").asText()).isEqualTo("편하게 일상을 공유하는 유형");
 	}
 }

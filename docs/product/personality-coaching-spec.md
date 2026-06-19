@@ -29,7 +29,7 @@
 ### 진행 현황 (2026-06-16 기준)
 - 완료(검증됨, mock 기반): 5축 정의·결정적 궁합 계산+테스트, 성향 입력/저장 UI, 성향 계정 영속화, **상대 5축 추론(mock)→적합도 결과 카드 end-to-end**.
 - **미검증(실DB 필요)**: V4(성향)·V5(상대유형) 마이그레이션 apply + JPA 매핑 → `npm run dev:db && npm run dev:backend:local`.
-- **실 LLM TODO**: `LlmAnalysisAdapter`의 responseSchema/파싱에 partnerType(5축) 추가 + `ai-analysis-contract.md` 갱신. 환경변수 `FLIRTING_HELL_AI_PROVIDER=claude`로 전환 시 동작.
+- **실 LLM partnerType**: ✅ `LlmAnalysisAdapter`의 responseSchema/파싱에 partnerType(5축) 추가 완료(스텁 테스트로 매핑 검증). 환경변수 `FLIRTING_HELL_AI_PROVIDER=claude` + API 키 투입 시 동작. 남은 건 실제 추론 품질 점검(키 필요).
 - **다음 단계**: 답장/플랜 프롬프트에 내 성향↔상대 유형 차이 반영(DoD #4) + §7 Q2~Q4 확정(Q2-1/2/3은 추천안 적용 중).
 
 ## 1. 기존 제품 위에 어떻게 얹히나
